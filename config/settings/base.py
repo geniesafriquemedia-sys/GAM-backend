@@ -19,6 +19,27 @@ SECRET_KEY = config('SECRET_KEY', default='change-me-in-production')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
+# Cloudflare Tunnel Support
+# Ajouter les Workers Cloudflare aux hosts autorisés
+ALLOWED_HOSTS += [
+    'gam-tunnel-front.geniesafriquemedia.workers.dev',
+    'gam-tunnel-back.geniesafriquemedia.workers.dev',
+    '.trycloudflare.com',  # Tunnels éphémères
+    '.workers.dev',  # Tous les workers
+]
+
+# Confiance envers le proxy Cloudflare
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# CSRF - Origines de confiance pour les tunnels
+CSRF_TRUSTED_ORIGINS = [
+    'https://gam-tunnel-front.geniesafriquemedia.workers.dev',
+    'https://gam-tunnel-back.geniesafriquemedia.workers.dev',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+
 # =============================================================================
 # APPLICATIONS
 # =============================================================================
@@ -225,6 +246,25 @@ CORS_ALLOWED_ORIGINS = config(
     cast=Csv()
 )
 CORS_ALLOW_CREDENTIALS = True
+
+# CORS - Support des tunnels Cloudflare via regex
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.workers\.dev$",
+    r"^https://.*\.trycloudflare\.com$",
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'x-forwarded-host',
+    'x-forwarded-proto',
+]
 
 # =============================================================================
 # FRONTEND URL (pour les liens dans Wagtail admin)
