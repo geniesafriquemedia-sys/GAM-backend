@@ -10,9 +10,17 @@ from .base import *
 DEBUG = True
 
 # =============================================================================
-# ALLOWED HOSTS
+# ALLOWED HOSTS (inclut les tunnels Cloudflare)
 # =============================================================================
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    'gam-tunnel-front.geniesafriquemedia.workers.dev',
+    'gam-tunnel-back.geniesafriquemedia.workers.dev',
+    '.trycloudflare.com',
+    '.workers.dev',
+]
 
 # =============================================================================
 # DATABASE (PostgreSQL Supabase - uses .env configuration from base.py)
@@ -59,6 +67,8 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'https://gam-tunnel-front.geniesafriquemedia.workers.dev',
+    'https://gam-tunnel-back.geniesafriquemedia.workers.dev',
 ]
 
 # =============================================================================
