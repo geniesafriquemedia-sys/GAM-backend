@@ -77,6 +77,18 @@ CSRF_TRUSTED_ORIGINS = [
 STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 
 # =============================================================================
+# REST FRAMEWORK (Disable throttling in development)
+# =============================================================================
+REST_FRAMEWORK = {
+    **globals().get('REST_FRAMEWORK', {}),
+    'DEFAULT_THROTTLE_CLASSES': [],  # Désactiver le rate limiting en dev
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': None,
+        'user': None,
+    },
+}
+
+# =============================================================================
 # LOGGING
 # =============================================================================
 LOGGING = {
