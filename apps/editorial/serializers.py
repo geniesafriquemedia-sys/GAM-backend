@@ -22,17 +22,21 @@ except ImportError:
 class AuthorListSerializer(serializers.ModelSerializer):
     """Serializer minimal pour les listes d'auteurs."""
 
-    articles_count = serializers.IntegerField(read_only=True)
+    articles_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Author
         fields = ['id', 'name', 'slug', 'photo', 'articles_count']
 
+    def get_articles_count(self, obj):
+        # Utilise l'annotation si disponible, sinon la propriété
+        return getattr(obj, '_articles_count', None) or obj.articles_count
+
 
 class AuthorDetailSerializer(serializers.ModelSerializer):
     """Serializer complet pour les détails d'un auteur."""
 
-    articles_count = serializers.IntegerField(read_only=True)
+    articles_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Author
@@ -42,6 +46,9 @@ class AuthorDetailSerializer(serializers.ModelSerializer):
             'articles_count', 'created_at'
         ]
         read_only_fields = ['id', 'slug', 'created_at']
+
+    def get_articles_count(self, obj):
+        return getattr(obj, '_articles_count', None) or obj.articles_count
 
 
 class AuthorCreateUpdateSerializer(serializers.ModelSerializer):
@@ -62,8 +69,8 @@ class AuthorCreateUpdateSerializer(serializers.ModelSerializer):
 class CategoryListSerializer(serializers.ModelSerializer):
     """Serializer minimal pour les listes de catégories."""
 
-    articles_count = serializers.IntegerField(read_only=True)
-    videos_count = serializers.IntegerField(read_only=True)
+    articles_count = serializers.SerializerMethodField()
+    videos_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
@@ -72,12 +79,18 @@ class CategoryListSerializer(serializers.ModelSerializer):
             'articles_count', 'videos_count'
         ]
 
+    def get_articles_count(self, obj):
+        return getattr(obj, '_articles_count', None) or obj.articles_count
+
+    def get_videos_count(self, obj):
+        return getattr(obj, '_videos_count', None) or obj.videos_count
+
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
     """Serializer complet pour les détails d'une catégorie."""
 
-    articles_count = serializers.IntegerField(read_only=True)
-    videos_count = serializers.IntegerField(read_only=True)
+    articles_count = serializers.SerializerMethodField()
+    videos_count = serializers.SerializerMethodField()
     children = CategoryListSerializer(many=True, read_only=True)
 
     class Meta:
@@ -88,6 +101,12 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
             'articles_count', 'videos_count', 'children', 'created_at'
         ]
         read_only_fields = ['id', 'slug', 'created_at']
+
+    def get_articles_count(self, obj):
+        return getattr(obj, '_articles_count', None) or obj.articles_count
+
+    def get_videos_count(self, obj):
+        return getattr(obj, '_videos_count', None) or obj.videos_count
 
 
 class CategoryCreateUpdateSerializer(serializers.ModelSerializer):

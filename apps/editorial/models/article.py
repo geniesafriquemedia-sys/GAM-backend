@@ -176,7 +176,9 @@ class Article(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, S
         indexes = [
             models.Index(fields=['status', 'published_at']),
             models.Index(fields=['is_featured', 'status']),
+            models.Index(fields=['is_trending', 'status']),
             models.Index(fields=['category', 'status']),
+            models.Index(fields=['author', 'status']),
         ]
 
     def __str__(self):

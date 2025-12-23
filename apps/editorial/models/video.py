@@ -175,7 +175,9 @@ class Video(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEO
         indexes = [
             models.Index(fields=['status', 'published_at']),
             models.Index(fields=['is_featured', 'status']),
+            models.Index(fields=['is_live', 'status']),
             models.Index(fields=['video_type', 'status']),
+            models.Index(fields=['category', 'status']),
         ]
 
     def __str__(self):

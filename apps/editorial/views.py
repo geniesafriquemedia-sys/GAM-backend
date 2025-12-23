@@ -8,7 +8,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, Count, Prefetch
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from apps.core.permissions import IsEditorOrReadOnly, CanPublish
@@ -59,8 +61,11 @@ class AuthorViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
         queryset = super().get_queryset()
         # Admins voient tous les auteurs
         if self.request.user.is_authenticated and self.request.user.is_staff:
-            return Author.objects.all()
-        return queryset
+            queryset = Author.objects.all()
+        # Annoter le count des articles pour éviter N+1
+        return queryset.annotate(
+            _articles_count=Count('articles', filter=Q(articles__status='published'))
+        )
 
     @action(detail=True, methods=['get'])
     def articles(self, request, pk=None):
@@ -69,7 +74,7 @@ class AuthorViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
         articles = author.articles.filter(
             status='published',
             published_at__lte=timezone.now()
-        )
+        ).select_related('author', 'category')
         serializer = ArticleListSerializer(articles, many=True)
         return Response(serializer.data)
 
@@ -115,7 +120,11 @@ class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
         elif self.action == 'list':
             # Par défaut, ne montrer que les catégories racines
             queryset = queryset.filter(parent__isnull=True)
-        return queryset
+        # Annoter les counts pour éviter N+1
+        return queryset.annotate(
+            _articles_count=Count('articles', filter=Q(articles__status='published')),
+            _videos_count=Count('videos', filter=Q(videos__status='published'))
+        ).prefetch_related('children')
 
     @action(detail=True, methods=['get'])
     def articles(self, request, pk=None):
@@ -124,7 +133,7 @@ class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
         articles = category.articles.filter(
             status='published',
             published_at__lte=timezone.now()
-        )
+        ).select_related('author', 'category')
         serializer = ArticleListSerializer(articles, many=True)
         return Response(serializer.data)
 
@@ -135,7 +144,7 @@ class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
         videos = category.videos.filter(
             status='published',
             published_at__lte=timezone.now()
-        )
+        ).select_related('category')
         serializer = VideoListSerializer(videos, many=True)
         return Response(serializer.data)
 
@@ -357,38 +366,62 @@ class HomepageView(viewsets.ViewSet):
     """
     Vue pour la page d'accueil (US-05).
     Retourne toutes les données nécessaires en une seule requête.
+    Cache de 5 minutes pour améliorer les performances.
     """
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @method_decorator(cache_page(60 * 5))  # Cache 5 minutes
     def list(self, request):
         now = timezone.now()
         published_filter = Q(status='published') & (
             Q(published_at__isnull=True) | Q(published_at__lte=now)
         )
 
-        # Articles à la Une
+        # Articles à la Une - avec annotations pour éviter N+1
         featured_articles = Article.objects.filter(
             published_filter, is_featured=True
-        ).select_related('author', 'category')[:3]
+        ).select_related('author', 'category').only(
+            'id', 'title', 'slug', 'excerpt', 'featured_image',
+            'reading_time', 'is_featured', 'is_trending', 'published_at',
+            'author__id', 'author__name', 'author__slug', 'author__photo',
+            'category__id', 'category__name', 'category__slug', 'category__color'
+        )[:3]
 
         # Articles récents
         recent_articles = Article.objects.filter(
             published_filter
-        ).select_related('author', 'category').order_by('-published_at')[:8]
+        ).select_related('author', 'category').only(
+            'id', 'title', 'slug', 'excerpt', 'featured_image',
+            'reading_time', 'is_featured', 'is_trending', 'published_at',
+            'author__id', 'author__name', 'author__slug', 'author__photo',
+            'category__id', 'category__name', 'category__slug', 'category__color'
+        ).order_by('-published_at')[:8]
 
         # Articles tendance
         trending_articles = Article.objects.filter(
             published_filter, is_trending=True
-        ).select_related('author', 'category')[:6]
+        ).select_related('author', 'category').only(
+            'id', 'title', 'slug', 'excerpt', 'featured_image',
+            'reading_time', 'is_featured', 'is_trending', 'published_at',
+            'author__id', 'author__name', 'author__slug', 'author__photo',
+            'category__id', 'category__name', 'category__slug', 'category__color'
+        )[:6]
 
         # Vidéos en vedette
         featured_videos = Video.objects.filter(
             published_filter, is_featured=True
-        ).select_related('category')[:4]
+        ).select_related('category').only(
+            'id', 'title', 'slug', 'description', 'youtube_id', 'thumbnail',
+            'video_type', 'duration', 'is_featured', 'is_live', 'published_at',
+            'category__id', 'category__name', 'category__slug', 'category__color'
+        )[:4]
 
-        # Catégories en vedette
+        # Catégories en vedette avec count annoté
         featured_categories = Category.objects.filter(
             is_active=True, is_featured=True
+        ).annotate(
+            _articles_count=Count('articles', filter=Q(articles__status='published')),
+            _videos_count=Count('videos', filter=Q(videos__status='published'))
         )[:6]
 
         return Response({
