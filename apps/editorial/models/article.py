@@ -43,6 +43,11 @@ class Article(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, S
         blank=True,
         null=True
     )
+    external_image_url = models.URLField(
+        'URL image externe',
+        blank=True,
+        help_text='URL d\'une image externe (ex: Unsplash). Utilisé si pas d\'image uploadée.'
+    )
     featured_image_caption = models.CharField(
         'Légende de l\'image',
         max_length=255,
@@ -135,6 +140,7 @@ class Article(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, S
             FieldPanel('title'),
             FieldPanel('excerpt'),
             FieldPanel('featured_image'),
+            FieldPanel('external_image_url'),
             FieldPanel('featured_image_caption'),
         ], heading="Informations principales"),
         MultiFieldPanel([
@@ -220,6 +226,13 @@ class Article(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, S
             category=self.category,
             status=self.PublicationStatus.PUBLISHED
         ).exclude(pk=self.pk)[:4]
+
+    @property
+    def image_url(self) -> str:
+        """Retourne l'URL de l'image (uploadée ou externe)."""
+        if self.featured_image:
+            return self.featured_image.url
+        return self.external_image_url or ''
 
 
 class ArticleBlock(TimeStampedModel):

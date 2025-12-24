@@ -208,11 +208,12 @@ class ArticleListSerializer(serializers.ModelSerializer):
 
     author = AuthorListSerializer(read_only=True)
     category = CategoryListSerializer(read_only=True)
+    image_url = serializers.CharField(read_only=True)
 
     class Meta:
         model = Article
         fields = [
-            'id', 'title', 'slug', 'excerpt', 'featured_image',
+            'id', 'title', 'slug', 'excerpt', 'featured_image', 'image_url',
             'author', 'category', 'reading_time', 'views_count',
             'is_featured', 'is_trending', 'status', 'published_at'
         ]
@@ -228,11 +229,12 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
     blocks = ArticleBlockSerializer(many=True, read_only=True)
     tags_list = serializers.ListField(source='get_tags_list', read_only=True)
     related_articles = ArticleListSerializer(many=True, read_only=True)
+    image_url = serializers.CharField(read_only=True)
 
     class Meta:
         model = Article
         fields = [
-            'id', 'title', 'slug', 'excerpt', 'featured_image',
+            'id', 'title', 'slug', 'excerpt', 'featured_image', 'image_url',
             'featured_image_caption', 'author', 'category', 'tags', 'tags_list',
             'content', 'body_blocks', 'blocks', 'reading_time', 'views_count',
             'is_featured', 'is_trending', 'status', 'published_at',

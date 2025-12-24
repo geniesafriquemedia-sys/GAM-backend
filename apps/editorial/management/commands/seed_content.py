@@ -121,7 +121,7 @@ class Command(BaseCommand):
 <p>Des entreprises comme M-Pesa au Kenya, Wave au Sénégal, et Flutterwave au Nigeria sont à l'avant-garde de cette révolution. Elles offrent des services qui répondent aux besoins spécifiques des populations africaines.</p>
 
 <p>Les investissements dans le secteur ont dépassé les 3 milliards de dollars en 2024, un record historique qui témoigne de la confiance des investisseurs dans le potentiel africain.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1200',
                 'author_slug': 'kwame-asante',
                 'category_slug': 'innovation-tech',
                 'reading_time': 6,
@@ -142,7 +142,7 @@ class Command(BaseCommand):
 <p>Plus de 200 artistes venus de 30 pays différents présenteront leurs œuvres dans les domaines de la peinture, la sculpture, la musique, la danse et les arts numériques. Une section spéciale sera dédiée aux jeunes talents émergents.</p>
 
 <p>Le thème de cette année, "Racines et Horizons", invite à explorer le dialogue entre tradition et modernité dans l'art africain contemporain.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200',
                 'author_slug': 'fatou-ndiaye',
                 'category_slug': 'culture-patrimoine',
                 'reading_time': 5,
@@ -162,7 +162,7 @@ class Command(BaseCommand):
 <p>Plus de 15 milliards de dollars ont été investis dans le secteur des énergies vertes au cours des cinq dernières années. De nouveaux parcs solaires et éoliens continuent d'être construits à travers le pays.</p>
 
 <p>Cette réussite positionne l'Afrique du Sud comme un leader continental dans la transition énergétique et pourrait inspirer d'autres nations africaines.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200',
                 'author_slug': 'aicha-mbeki',
                 'category_slug': 'innovation-tech',
                 'reading_time': 4,
@@ -182,7 +182,7 @@ class Command(BaseCommand):
 <p>Face aux menaces climatiques et aux conflits, la numérisation de ces documents était devenue urgente. Grâce à la collaboration internationale, plus de 300 000 manuscrits sont désormais accessibles en ligne.</p>
 
 <p>Cette initiative ouvre de nouvelles perspectives de recherche sur l'histoire intellectuelle africaine et remet en question de nombreux préjugés historiques.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1200',
                 'author_slug': 'ibrahim-keita',
                 'category_slug': 'culture-patrimoine',
                 'reading_time': 7,
@@ -202,7 +202,7 @@ class Command(BaseCommand):
 <p>Les premiers utilisateurs rapportent une augmentation de 30% de leurs rendements et une réduction de 40% de l'utilisation de pesticides, grâce à une détection précoce des maladies et des zones de stress hydrique.</p>
 
 <p>Le gouvernement kenyan a annoncé un programme de subventions pour accélérer l'adoption de ces technologies dans l'ensemble du pays.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=1200',
                 'author_slug': 'kwame-asante',
                 'category_slug': 'innovation-tech',
                 'reading_time': 5,
@@ -221,7 +221,7 @@ class Command(BaseCommand):
 <p>Le marché de la mode africaine est estimé à 31 milliards de dollars et devrait doubler d'ici 2030. Les marques de luxe s'intéressent de plus en plus aux collaborations avec des artisans africains.</p>
 
 <p>Cette reconnaissance internationale ouvre de nouvelles perspectives économiques pour l'industrie textile africaine et ses millions d'artisans.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=1200',
                 'author_slug': 'amina-diallo',
                 'category_slug': 'culture-patrimoine',
                 'reading_time': 4,
@@ -241,7 +241,7 @@ class Command(BaseCommand):
 <p>L'objectif est de former 10 000 spécialistes en IA d'ici 2030 et de développer des solutions adaptées aux défis africains dans les domaines de la santé, de l'agriculture et de l'éducation.</p>
 
 <p>Plusieurs projets pilotes sont déjà en cours, notamment un système de diagnostic médical assisté par IA et une plateforme d'agriculture de précision.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200',
                 'author_slug': 'ibrahim-keita',
                 'category_slug': 'innovation-tech',
                 'reading_time': 6,
@@ -261,7 +261,7 @@ class Command(BaseCommand):
 <p>Aujourd'hui, une nouvelle génération de griots utilise les réseaux sociaux et les plateformes de streaming pour toucher un public plus large, tout en préservant l'authenticité de leur art.</p>
 
 <p>Des initiatives de sauvegarde ont été lancées par l'UNESCO pour documenter et préserver ce patrimoine immatériel unique de l'humanité.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1200',
                 'author_slug': 'fatou-ndiaye',
                 'category_slug': 'culture-patrimoine',
                 'reading_time': 8,
@@ -280,7 +280,7 @@ class Command(BaseCommand):
 <p>Fort de ce succès, Jumia annonce son expansion dans cinq nouveaux marchés : la RDC, l'Angola, le Mozambique, la Zambie et le Zimbabwe. L'entreprise prévoit d'investir 200 millions de dollars dans le développement de ses infrastructures logistiques.</p>
 
 <p>Cette croissance témoigne de l'appétit des consommateurs africains pour le commerce en ligne et du potentiel immense de ce marché.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200',
                 'author_slug': 'amina-diallo',
                 'category_slug': 'innovation-tech',
                 'reading_time': 5,
@@ -300,7 +300,7 @@ class Command(BaseCommand):
 <p>Les premières fouilles ont révélé des temples ornés de fresques, des tombes royales et des milliers d'objets du quotidien. Les archéologues estiment qu'il faudra plusieurs décennies pour explorer entièrement le site.</p>
 
 <p>Cette découverte pourrait réécrire certains chapitres de l'histoire africaine et attirer l'attention internationale sur le patrimoine archéologique du Soudan.</p>''',
-                'featured_image': 'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=1200',
+                'external_image_url': 'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=1200',
                 'author_slug': 'aicha-mbeki',
                 'category_slug': 'culture-patrimoine',
                 'reading_time': 6,
