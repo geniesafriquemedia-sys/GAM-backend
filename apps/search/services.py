@@ -82,6 +82,7 @@ class SearchService:
                 'slug': article.slug,
                 'excerpt': article.excerpt,
                 'featured_image': article.featured_image.url if article.featured_image else None,
+                'image_url': article.image_url,  # URL de l'image (uploadée ou externe)
                 'author': {
                     'name': article.author.name,
                     'slug': article.author.slug,
@@ -196,17 +197,20 @@ def get_trending_tags(limit: int = 10) -> List[str]:
     """
     Retourne les tags les plus utilisés.
     """
-    cache_key = 'trending_tags'
+    cache_key = f'trending_tags_{limit}'
     cached = cache.get(cache_key)
     if cached:
         return cached
 
     now = timezone.now()
 
-    # Récupérer tous les tags des articles récents
+    # Récupérer tous les tags des articles récents (exclure les tags vides)
     articles = Article.objects.filter(
         status='published',
-        tags__isnull=False
+    ).exclude(
+        tags__isnull=True
+    ).exclude(
+        tags=''
     ).filter(
         Q(published_at__isnull=True) | Q(published_at__lte=now)
     ).order_by('-published_at')[:100]

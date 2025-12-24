@@ -31,6 +31,9 @@ api_v1_patterns = [
 
     # Search
     path('search/', include('apps.search.urls')),
+    
+    # KPI & Statistics
+    path('kpi/', include('apps.kpi.urls')),
 ]
 
 # =============================================================================
