@@ -639,12 +639,82 @@ tbody td a:hover {
     background: var(--gam-bg-input) !important;
     border: 1px solid var(--gam-border) !important;
     border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 12px !important;
+    gap: 8px !important;
 }
 
-.w-header-search input {
+.w-header-search input,
+[data-search-form] input {
     background: transparent !important;
     border: none !important;
     color: var(--gam-text-primary) !important;
+    padding: 10px 0 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.w-header-search input::placeholder,
+[data-search-form] input::placeholder {
+    color: var(--gam-text-muted) !important;
+}
+
+/* Icône de recherche */
+.w-header-search .icon,
+.w-header-search svg,
+[data-search-form] .icon,
+[data-search-form] svg {
+    color: var(--gam-text-muted) !important;
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0 !important;
+}
+
+.w-header-search button,
+[data-search-form] button {
+    background: transparent !important;
+    border: none !important;
+    padding: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+}
+
+.w-header-search button:hover .icon,
+.w-header-search button:hover svg {
+    color: var(--gam-accent) !important;
+}
+
+/* Recherche dans les listings/filtres */
+.w-field--search,
+.search-form,
+input[type="search"] {
+    background: var(--gam-bg-input) !important;
+    border: 1px solid var(--gam-border) !important;
+    border-radius: 8px !important;
+    color: var(--gam-text-primary) !important;
+    padding: 10px 14px 10px 36px !important;
+}
+
+.w-field--search::before,
+.search-form::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a0a0b0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* Wrapper pour positionnement relatif */
+.w-field--search-wrapper {
+    position: relative !important;
 }
 
 /* =============================================================================
