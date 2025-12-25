@@ -13,6 +13,8 @@ from .views import (
     ProfileView,
     PasswordChangeView,
     AdminUserViewSet,
+    SessionLoginView,
+    SessionLogoutView,
 )
 
 app_name = 'users'
@@ -34,4 +36,8 @@ urlpatterns = [
 
     # Admin User Management
     path('admin/', include(router.urls)),
+
+    # Session-based auth (for Wagtail CMS)
+    path('session/login/', SessionLoginView.as_view(), name='session-login'),
+    path('session/logout/', SessionLogoutView.as_view(), name='session-logout'),
 ]

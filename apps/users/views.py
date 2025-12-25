@@ -218,3 +218,58 @@ class AdminUserViewSet(viewsets.ModelViewSet):
             'message': f'Rôle modifié en {user.get_role_display()}',
             'user': AdminUserSerializer(user).data
         })
+
+
+# =============================================================================
+# SESSION LOGIN VIEW (for Wagtail CMS access)
+# =============================================================================
+
+from django.views import View
+from django.http import HttpResponseRedirect
+from django.contrib.auth import authenticate
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.conf import settings
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SessionLoginView(View):
+    """
+    Vue de connexion par session Django.
+    Authentifie l'utilisateur et redirige vers Wagtail CMS.
+    """
+
+    def post(self, request):
+        email = request.POST.get('email', '')
+        password = request.POST.get('password', '')
+        next_url = request.POST.get('next', '/cms/')
+
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None and user.is_active:
+            django_login(request, user)
+            return HttpResponseRedirect(next_url)
+        else:
+            # Rediriger vers la page login frontend avec erreur
+            frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
+            return HttpResponseRedirect(f'{frontend_url}/login?error=invalid_credentials')
+
+    def get(self, request):
+        # Rediriger GET vers la page login frontend
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
+        return HttpResponseRedirect(f'{frontend_url}/login')
+
+
+class SessionLogoutView(View):
+    """
+    Vue de déconnexion.
+    Détruit la session et redirige vers la page login frontend.
+    """
+
+    def get(self, request):
+        django_logout(request)
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
+        return HttpResponseRedirect(f'{frontend_url}/login')
+
+    def post(self, request):
+        return self.get(request)

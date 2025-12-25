@@ -375,3 +375,18 @@ TASKS = {
         "BACKEND": "apps.core.tasks_backend.ImmediateBackend",
     }
 }
+
+# =============================================================================
+# LOGIN/LOGOUT REDIRECTS
+# =============================================================================
+# URL de connexion (redirige vers le frontend login)
+LOGIN_URL = '/api/v1/auth/session/login/'
+
+# Après connexion réussie, aller au dashboard Wagtail
+LOGIN_REDIRECT_URL = '/cms/'
+
+# Après déconnexion, aller à la page login frontend
+LOGOUT_REDIRECT_URL = FRONTEND_URL + '/login'
+
+# Wagtail logout redirect
+WAGTAIL_FRONTEND_LOGIN_URL = FRONTEND_URL + '/login'
