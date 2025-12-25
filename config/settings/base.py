@@ -61,6 +61,8 @@ THIRD_PARTY_APPS = [
     'drf_spectacular',
     'taggit',
     'modelcluster',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 # Wagtail CMS Apps
@@ -191,6 +193,22 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# =============================================================================
+# CLOUDINARY SETTINGS (Media Storage)
+# =============================================================================
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default='dxe2sh4cb'),
+    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
+}
+
+# Utiliser Cloudinary pour le stockage des médias en production
+USE_CLOUDINARY = config('USE_CLOUDINARY', default=False, cast=bool)
+
+if USE_CLOUDINARY:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 # =============================================================================
 # DEFAULT PRIMARY KEY
