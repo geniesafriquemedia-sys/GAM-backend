@@ -88,25 +88,11 @@ def hide_default_snippets_menu(request, menu_items):
 
 @hooks.register('insert_global_admin_css')
 def global_admin_css():
-    """CSS personnalisé pour l'admin Wagtail."""
-    return '''
-    <style>
-        /* Style pour le menu éditorial */
-        .sidebar-menu-item--editorial .icon {
-            color: #2563eb;
-        }
-
-        /* Amélioration du preview des couleurs de catégorie */
-        .category-color-preview {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-    </style>
-    '''
+    """CSS personnalisé pour l'admin Wagtail - Thème GAM moderne sombre."""
+    return format_html(
+        '<link rel="stylesheet" href="{}core/css/wagtail-theme.css">',
+        settings.STATIC_URL
+    )
 
 
 @hooks.register('register_admin_urls')
