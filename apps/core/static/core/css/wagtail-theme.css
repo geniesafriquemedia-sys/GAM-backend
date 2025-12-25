@@ -43,38 +43,22 @@
    WAGTAIL CSS VARIABLES OVERRIDE
    ============================================================================= */
 :root {
-    /* Primary colors */
     --w-color-primary: var(--gam-accent) !important;
     --w-color-primary-200: var(--gam-accent-light) !important;
-
-    /* Secondary/accent */
     --w-color-secondary: var(--gam-accent) !important;
-
-    /* Surface colors - Dark blue theme */
     --w-color-surface-page: var(--gam-bg-dark) !important;
     --w-color-surface-field: var(--gam-bg-input) !important;
     --w-color-surface-header: var(--gam-bg-card) !important;
     --w-color-surface-menus: var(--gam-bg-card) !important;
     --w-color-surface-tooltip: var(--gam-bg-hover) !important;
     --w-color-surface-button-default: var(--gam-bg-hover) !important;
-
-    /* Text colors */
     --w-color-text-label: var(--gam-text-primary) !important;
     --w-color-text-label-menus-default: var(--gam-text-secondary) !important;
     --w-color-text-label-menus-active: var(--gam-text-primary) !important;
     --w-color-text-meta: var(--gam-text-muted) !important;
     --w-color-text-placeholder: var(--gam-text-muted) !important;
-    --w-color-text-button-outline-default: var(--gam-text-primary) !important;
-
-    /* Border colors */
     --w-color-border-furniture: var(--gam-border) !important;
     --w-color-border-field-default: var(--gam-border) !important;
-    --w-color-border-field-hover: var(--gam-border-light) !important;
-
-    /* Border radius */
-    --w-border-radius-large: 16px !important;
-    --w-border-radius-medium: 12px !important;
-    --w-border-radius-small: 8px !important;
 }
 
 /* =============================================================================
@@ -93,109 +77,248 @@ button {
 }
 
 /* =============================================================================
-   SIDEBAR
+   SIDEBAR PRINCIPALE
    ============================================================================= */
-.sidebar {
+.sidebar,
+[data-sidebar],
+.w-sidebar {
     background: var(--gam-primary-dark) !important;
     border-right: 1px solid var(--gam-border) !important;
 }
 
-.sidebar-menu-item {
-    border-radius: 10px !important;
-    margin: 4px 8px !important;
-    transition: all 0.2s ease !important;
-}
-
-.sidebar-menu-item:hover {
-    background: var(--gam-bg-hover) !important;
-    transform: translateX(4px);
-}
-
-.sidebar-menu-item.is-active {
-    background: var(--gam-accent) !important;
-}
-
-.sidebar-menu-item.is-active a,
-.sidebar-menu-item.is-active .sidebar-menu-item__link {
-    color: var(--gam-primary-dark) !important;
-}
-
-.sidebar-menu-item.is-active .icon {
-    color: var(--gam-primary-dark) !important;
+/* Container du menu */
+.sidebar__inner,
+.sidebar-main-menu {
+    background: var(--gam-primary-dark) !important;
 }
 
 /* =============================================================================
-   LOGO GAM - Remplacement de l'oiseau Wagtail
+   LOGO / BRANDING
    ============================================================================= */
 .sidebar-wagtail-branding {
     background: var(--gam-primary-dark) !important;
     border-bottom: 1px solid var(--gam-border) !important;
-    padding: 16px !important;
+    padding: 20px 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-/* Cacher l'icône Wagtail par défaut */
-.sidebar-wagtail-branding__icon {
+/* Cacher l'icône Wagtail */
+.sidebar-wagtail-branding__icon,
+.sidebar-wagtail-branding svg {
     display: none !important;
 }
 
-/* Logo GAM textuel */
+/* Logo GAM */
 .sidebar-wagtail-branding::before {
     content: "GÉNIES D'AFRIQUE";
     display: block;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-align: center;
-    padding: 12px 8px;
-    background: linear-gradient(135deg, var(--gam-primary), var(--gam-primary-light));
-    border-radius: 12px;
+    color: var(--gam-accent);
+    padding: 8px 12px;
+    background: var(--gam-primary) !important;
     border: 2px solid var(--gam-accent);
-}
-
-/* Couleurs du texte du logo */
-.sidebar-wagtail-branding::before {
-    background:
-        linear-gradient(90deg,
-            var(--gam-accent) 0%,
-            var(--gam-accent) 40%,
-            var(--gam-text-primary) 40%,
-            var(--gam-text-primary) 100%
-        );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: none;
-}
-
-/* Alternative: fond avec texte */
-.sidebar-wagtail-branding {
-    position: relative;
+    border-radius: 8px;
 }
 
 .sidebar-wagtail-branding::after {
     content: "MÉDIAS";
     display: block;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     text-align: center;
     color: var(--gam-text-secondary);
-    margin-top: 4px;
-}
-
-/* Sous-menus */
-.sidebar-sub-menu-panel {
-    background: var(--gam-bg-card) !important;
-    border: 1px solid var(--gam-border) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+    margin-top: 6px;
 }
 
 /* =============================================================================
-   HEADER
+   MENU ITEMS PRINCIPAUX
+   ============================================================================= */
+.sidebar-menu-item {
+    margin: 2px 8px !important;
+    border-radius: 8px !important;
+    transition: all 0.15s ease !important;
+    background: transparent !important;
+}
+
+.sidebar-menu-item__link {
+    color: var(--gam-text-secondary) !important;
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-decoration: none !important;
+}
+
+.sidebar-menu-item:hover {
+    background: var(--gam-bg-hover) !important;
+}
+
+.sidebar-menu-item:hover .sidebar-menu-item__link {
+    color: var(--gam-text-primary) !important;
+}
+
+.sidebar-menu-item:hover .icon {
+    color: var(--gam-accent) !important;
+}
+
+/* Item actif */
+.sidebar-menu-item.is-active,
+.sidebar-menu-item[aria-current="page"],
+.sidebar-menu-item--active {
+    background: var(--gam-accent) !important;
+}
+
+.sidebar-menu-item.is-active .sidebar-menu-item__link,
+.sidebar-menu-item[aria-current="page"] .sidebar-menu-item__link,
+.sidebar-menu-item--active .sidebar-menu-item__link {
+    color: var(--gam-primary-dark) !important;
+    font-weight: 600 !important;
+}
+
+.sidebar-menu-item.is-active .icon,
+.sidebar-menu-item[aria-current="page"] .icon,
+.sidebar-menu-item--active .icon {
+    color: var(--gam-primary-dark) !important;
+}
+
+/* =============================================================================
+   SOUS-MENUS (Panels flyout)
+   ============================================================================= */
+.sidebar-sub-menu-panel,
+.sidebar__panel,
+[data-side-panel],
+.w-side-panel {
+    background: var(--gam-bg-card) !important;
+    border: 1px solid var(--gam-border) !important;
+    border-left: none !important;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.4) !important;
+    z-index: 1000 !important;
+}
+
+/* Header du sous-menu */
+.sidebar-sub-menu-panel__header,
+.w-side-panel__header,
+.sidebar__panel-header {
+    background: var(--gam-primary-dark) !important;
+    border-bottom: 1px solid var(--gam-border) !important;
+    padding: 16px !important;
+}
+
+.sidebar-sub-menu-panel__title,
+.w-side-panel__title {
+    color: var(--gam-text-primary) !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+}
+
+/* Contenu du sous-menu */
+.sidebar-sub-menu-panel__content,
+.w-side-panel__content {
+    background: var(--gam-bg-card) !important;
+    padding: 8px !important;
+}
+
+/* Items dans le sous-menu */
+.sidebar-sub-menu-item,
+.sidebar-sub-menu-panel .sidebar-menu-item {
+    margin: 2px 4px !important;
+    border-radius: 6px !important;
+}
+
+.sidebar-sub-menu-item__link,
+.sidebar-sub-menu-panel .sidebar-menu-item__link {
+    color: var(--gam-text-secondary) !important;
+    padding: 10px 14px !important;
+    border-radius: 6px !important;
+    display: block !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease !important;
+}
+
+.sidebar-sub-menu-item:hover,
+.sidebar-sub-menu-panel .sidebar-menu-item:hover {
+    background: var(--gam-bg-hover) !important;
+}
+
+.sidebar-sub-menu-item:hover .sidebar-sub-menu-item__link,
+.sidebar-sub-menu-panel .sidebar-menu-item:hover .sidebar-menu-item__link {
+    color: var(--gam-text-primary) !important;
+}
+
+.sidebar-sub-menu-item.is-active,
+.sidebar-sub-menu-panel .sidebar-menu-item.is-active {
+    background: var(--gam-accent) !important;
+}
+
+.sidebar-sub-menu-item.is-active .sidebar-sub-menu-item__link,
+.sidebar-sub-menu-panel .sidebar-menu-item.is-active .sidebar-menu-item__link {
+    color: var(--gam-primary-dark) !important;
+    font-weight: 600 !important;
+}
+
+/* =============================================================================
+   ICÔNES SIDEBAR
+   ============================================================================= */
+.sidebar-menu-item .icon,
+.sidebar .icon {
+    color: var(--gam-text-muted) !important;
+    width: 20px !important;
+    height: 20px !important;
+    transition: color 0.15s ease !important;
+}
+
+/* =============================================================================
+   BOUTON TOGGLE SIDEBAR (hamburger)
+   ============================================================================= */
+.sidebar-toggle,
+.sidebar__toggle {
+    background: var(--gam-bg-hover) !important;
+    border: 1px solid var(--gam-border) !important;
+    border-radius: 6px !important;
+    color: var(--gam-text-secondary) !important;
+}
+
+.sidebar-toggle:hover,
+.sidebar__toggle:hover {
+    background: var(--gam-accent) !important;
+    color: var(--gam-primary-dark) !important;
+}
+
+/* =============================================================================
+   FOOTER SIDEBAR (profil utilisateur)
+   ============================================================================= */
+.sidebar-footer,
+.sidebar__footer {
+    background: var(--gam-primary-dark) !important;
+    border-top: 1px solid var(--gam-border) !important;
+    padding: 12px !important;
+}
+
+.sidebar-footer__account,
+.sidebar-account {
+    background: var(--gam-bg-hover) !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+}
+
+.sidebar-footer__account:hover,
+.sidebar-account:hover {
+    background: var(--gam-bg-card) !important;
+}
+
+/* =============================================================================
+   HEADER PRINCIPAL
    ============================================================================= */
 .w-header,
-header {
+header[role="banner"] {
     background: var(--gam-bg-card) !important;
     border-bottom: 1px solid var(--gam-border) !important;
 }
@@ -214,7 +337,6 @@ h1, h2, h3, h4 {
 
 .w-breadcrumbs a {
     color: var(--gam-text-secondary) !important;
-    transition: color 0.2s ease !important;
 }
 
 .w-breadcrumbs a:hover {
@@ -233,20 +355,19 @@ main,
 
 /* Panels/Cards */
 .w-panel,
-.nice-padding,
-.object,
-section {
+.nice-padding {
     background: var(--gam-bg-card) !important;
     border: 1px solid var(--gam-border) !important;
-    border-radius: 16px !important;
+    border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    margin-bottom: 20px !important;
 }
 
-.w-panel__heading,
-.w-label {
+.w-panel__heading {
     background: transparent !important;
     border-bottom: 1px solid var(--gam-border) !important;
     color: var(--gam-text-primary) !important;
+    padding: 16px 20px !important;
 }
 
 /* =============================================================================
@@ -254,27 +375,23 @@ section {
    ============================================================================= */
 .button,
 button[type="submit"],
-.w-button,
-[type="submit"] {
-    border-radius: 10px !important;
+.w-button {
+    border-radius: 8px !important;
     font-weight: 600 !important;
-    transition: all 0.2s ease !important;
-    text-transform: none !important;
+    transition: all 0.15s ease !important;
+    padding: 10px 20px !important;
 }
 
 .button:hover,
 .w-button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(229, 163, 65, 0.4) !important;
+    transform: translateY(-1px) !important;
 }
 
-/* Bouton primaire - Jaune/Or GAM */
+/* Bouton primaire */
 .button.button-primary,
 .button.yes,
-.w-button--primary,
-.button-small.button-primary,
-button.button-primary {
-    background: linear-gradient(135deg, var(--gam-accent), var(--gam-accent-dark)) !important;
+.w-button--primary {
+    background: var(--gam-accent) !important;
     border: none !important;
     color: var(--gam-primary-dark) !important;
     font-weight: 700 !important;
@@ -282,7 +399,8 @@ button.button-primary {
 
 .button.button-primary:hover,
 .w-button--primary:hover {
-    background: linear-gradient(135deg, var(--gam-accent-light), var(--gam-accent)) !important;
+    background: var(--gam-accent-light) !important;
+    box-shadow: 0 4px 12px rgba(229, 163, 65, 0.4) !important;
 }
 
 /* Bouton secondaire */
@@ -294,13 +412,13 @@ button.button-primary {
     color: var(--gam-text-primary) !important;
 }
 
-/* Action buttons group */
+/* Actions footer */
 .actions,
-footer {
+footer.actions {
     background: var(--gam-bg-card) !important;
     border-top: 1px solid var(--gam-border) !important;
-    border-radius: 0 0 16px 16px !important;
-    padding: 20px !important;
+    padding: 16px 20px !important;
+    border-radius: 0 0 12px 12px !important;
 }
 
 /* =============================================================================
@@ -315,21 +433,20 @@ input[type="search"],
 input[type="date"],
 input[type="datetime-local"],
 textarea,
-select,
-.tagit {
+select {
     background: var(--gam-bg-input) !important;
     border: 1px solid var(--gam-border) !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     color: var(--gam-text-primary) !important;
-    padding: 12px 16px !important;
-    transition: all 0.2s ease !important;
+    padding: 10px 14px !important;
+    transition: all 0.15s ease !important;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
     border-color: var(--gam-accent) !important;
-    box-shadow: 0 0 0 3px rgba(229, 163, 65, 0.25) !important;
+    box-shadow: 0 0 0 3px rgba(229, 163, 65, 0.2) !important;
     outline: none !important;
 }
 
@@ -338,24 +455,22 @@ textarea::placeholder {
     color: var(--gam-text-muted) !important;
 }
 
-/* Labels */
 label,
 .w-field__label {
     color: var(--gam-text-secondary) !important;
     font-weight: 600 !important;
+    font-size: 12px !important;
     text-transform: uppercase !important;
-    font-size: 11px !important;
     letter-spacing: 0.5px !important;
+    margin-bottom: 6px !important;
 }
 
-/* Help text */
 .help,
 .w-field__help {
     color: var(--gam-text-muted) !important;
     font-size: 13px !important;
 }
 
-/* Checkboxes et radios */
 input[type="checkbox"],
 input[type="radio"] {
     accent-color: var(--gam-accent) !important;
@@ -367,8 +482,9 @@ input[type="radio"] {
 table,
 .listing {
     background: var(--gam-bg-card) !important;
-    border-radius: 16px !important;
+    border-radius: 12px !important;
     overflow: hidden !important;
+    border: 1px solid var(--gam-border) !important;
 }
 
 thead th {
@@ -378,12 +494,13 @@ thead th {
     text-transform: uppercase !important;
     font-size: 11px !important;
     letter-spacing: 0.5px !important;
+    padding: 12px 16px !important;
     border-bottom: 1px solid var(--gam-border) !important;
 }
 
 tbody tr {
     border-bottom: 1px solid var(--gam-border) !important;
-    transition: background 0.2s ease !important;
+    transition: background 0.15s ease !important;
 }
 
 tbody tr:hover {
@@ -392,6 +509,7 @@ tbody tr:hover {
 
 tbody td {
     color: var(--gam-text-primary) !important;
+    padding: 12px 16px !important;
 }
 
 tbody td a {
@@ -400,16 +518,17 @@ tbody td a {
 
 tbody td a:hover {
     color: var(--gam-accent-light) !important;
+    text-decoration: underline !important;
 }
 
 /* =============================================================================
-   MESSAGES / ALERTES
+   MESSAGES
    ============================================================================= */
 .messages .success,
 .w-message--success {
     background: rgba(34, 197, 94, 0.15) !important;
     border: 1px solid var(--gam-success) !important;
-    border-radius: 12px !important;
+    border-radius: 8px !important;
     color: var(--gam-success) !important;
 }
 
@@ -417,7 +536,7 @@ tbody td a:hover {
 .w-message--error {
     background: rgba(239, 68, 68, 0.15) !important;
     border: 1px solid var(--gam-error) !important;
-    border-radius: 12px !important;
+    border-radius: 8px !important;
     color: var(--gam-error) !important;
 }
 
@@ -425,42 +544,43 @@ tbody td a:hover {
 .w-message--warning {
     background: rgba(229, 163, 65, 0.15) !important;
     border: 1px solid var(--gam-warning) !important;
-    border-radius: 12px !important;
+    border-radius: 8px !important;
     color: var(--gam-warning) !important;
 }
 
 /* =============================================================================
-   DASHBOARD HOME
+   DASHBOARD
    ============================================================================= */
 .w-summary {
     background: var(--gam-bg-card) !important;
     border: 1px solid var(--gam-border) !important;
-    border-radius: 16px !important;
+    border-radius: 12px !important;
 }
 
 .w-summary__list {
     display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
-    gap: 16px !important;
-    padding: 20px !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 12px !important;
+    padding: 16px !important;
 }
 
 .w-summary__item {
     background: var(--gam-bg-hover) !important;
-    border-radius: 12px !important;
-    padding: 20px !important;
-    transition: all 0.2s ease !important;
     border: 1px solid var(--gam-border) !important;
+    border-radius: 10px !important;
+    padding: 16px !important;
+    transition: all 0.15s ease !important;
 }
 
 .w-summary__item:hover {
     background: var(--gam-bg-input) !important;
-    transform: translateY(-2px) !important;
     border-color: var(--gam-accent) !important;
+    transform: translateY(-2px) !important;
 }
 
 .w-summary__item a {
     color: var(--gam-text-primary) !important;
+    text-decoration: none !important;
 }
 
 /* =============================================================================
@@ -471,54 +591,54 @@ tbody td a:hover {
 [role="dialog"] {
     background: var(--gam-bg-card) !important;
     border: 1px solid var(--gam-border) !important;
-    border-radius: 20px !important;
+    border-radius: 16px !important;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6) !important;
 }
 
-.modal-header {
-    border-bottom: 1px solid var(--gam-border) !important;
-}
-
-.modal-footer {
-    border-top: 1px solid var(--gam-border) !important;
+.modal-body {
+    background: var(--gam-bg-card) !important;
+    color: var(--gam-text-primary) !important;
 }
 
 /* =============================================================================
    PAGINATION
    ============================================================================= */
 .pagination {
-    gap: 8px !important;
+    display: flex !important;
+    gap: 6px !important;
 }
 
 .pagination a,
 .pagination span {
     background: var(--gam-bg-hover) !important;
     border: 1px solid var(--gam-border) !important;
-    border-radius: 8px !important;
-    padding: 8px 14px !important;
-    transition: all 0.2s ease !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
     color: var(--gam-text-primary) !important;
+    transition: all 0.15s ease !important;
 }
 
 .pagination a:hover {
     background: var(--gam-accent) !important;
     color: var(--gam-primary-dark) !important;
+    border-color: var(--gam-accent) !important;
 }
 
 .pagination .current {
     background: var(--gam-accent) !important;
     color: var(--gam-primary-dark) !important;
+    border-color: var(--gam-accent) !important;
     font-weight: 700 !important;
 }
 
 /* =============================================================================
-   RECHERCHE
+   RECHERCHE HEADER
    ============================================================================= */
 .w-header-search,
 [data-search-form] {
     background: var(--gam-bg-input) !important;
-    border-radius: 12px !important;
     border: 1px solid var(--gam-border) !important;
+    border-radius: 8px !important;
 }
 
 .w-header-search input {
@@ -528,25 +648,28 @@ tbody td a:hover {
 }
 
 /* =============================================================================
-   STREAMFIELD BLOCKS
+   STREAMFIELD
    ============================================================================= */
 .c-sf-block,
 [data-streamfield-block] {
     background: var(--gam-bg-hover) !important;
     border: 1px solid var(--gam-border) !important;
-    border-radius: 12px !important;
-    margin-bottom: 12px !important;
+    border-radius: 10px !important;
+    margin-bottom: 10px !important;
 }
 
 .c-sf-block__header {
     background: transparent !important;
     border-bottom: 1px solid var(--gam-border) !important;
+    padding: 10px 14px !important;
 }
 
 .c-sf-add {
     background: var(--gam-bg-card) !important;
     border: 2px dashed var(--gam-border) !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
+    padding: 20px !important;
+    text-align: center !important;
 }
 
 .c-sf-add:hover {
@@ -555,44 +678,27 @@ tbody td a:hover {
 }
 
 /* =============================================================================
-   DROPDOWN MENUS
+   DROPDOWNS / TIPPY
    ============================================================================= */
 .c-dropdown__menu,
-.tippy-content,
-[data-tippy-root],
-.tippy-box {
+.tippy-box,
+.tippy-content {
     background: var(--gam-bg-card) !important;
     border: 1px solid var(--gam-border) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    padding: 6px !important;
 }
 
-.c-dropdown__item,
-.tippy-content a {
-    border-radius: 8px !important;
-    margin: 4px !important;
-    transition: background 0.2s ease !important;
+.c-dropdown__item {
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
     color: var(--gam-text-primary) !important;
+    transition: background 0.15s ease !important;
 }
 
-.c-dropdown__item:hover,
-.tippy-content a:hover {
+.c-dropdown__item:hover {
     background: var(--gam-bg-hover) !important;
-    color: var(--gam-accent) !important;
-}
-
-/* =============================================================================
-   ICONS
-   ============================================================================= */
-.icon {
-    color: var(--gam-text-secondary) !important;
-}
-
-.sidebar-menu-item .icon {
-    color: var(--gam-text-muted) !important;
-}
-
-.sidebar-menu-item:hover .icon {
     color: var(--gam-accent) !important;
 }
 
@@ -604,6 +710,7 @@ tbody td a:hover {
     border: 1px solid var(--gam-border) !important;
     color: var(--gam-text-secondary) !important;
     border-radius: 8px 8px 0 0 !important;
+    padding: 10px 16px !important;
 }
 
 .w-tabs__tab:hover {
@@ -616,6 +723,7 @@ tbody td a:hover {
     background: var(--gam-accent) !important;
     color: var(--gam-primary-dark) !important;
     font-weight: 700 !important;
+    border-color: var(--gam-accent) !important;
 }
 
 /* =============================================================================
@@ -624,7 +732,7 @@ tbody td a:hover {
 .status-tag,
 .w-status {
     border-radius: 20px !important;
-    padding: 4px 12px !important;
+    padding: 4px 10px !important;
     font-size: 11px !important;
     font-weight: 600 !important;
     text-transform: uppercase !important;
@@ -634,6 +742,21 @@ tbody td a:hover {
 .w-status--primary {
     background: var(--gam-accent) !important;
     color: var(--gam-primary-dark) !important;
+}
+
+/* =============================================================================
+   IMAGE CHOOSER
+   ============================================================================= */
+.image-chooser,
+.chooser {
+    background: var(--gam-bg-hover) !important;
+    border: 2px dashed var(--gam-border) !important;
+    border-radius: 10px !important;
+}
+
+.image-chooser:hover,
+.chooser:hover {
+    border-color: var(--gam-accent) !important;
 }
 
 /* =============================================================================
@@ -661,94 +784,54 @@ tbody td a:hover {
    ANIMATIONS
    ============================================================================= */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .w-panel,
-.listing,
-.messages li {
-    animation: fadeIn 0.3s ease;
+.listing {
+    animation: fadeIn 0.2s ease;
 }
 
 /* =============================================================================
-   USERBAR (barre utilisateur en haut)
+   LIENS
    ============================================================================= */
-.w-userbar,
-.wagtail-userbar {
-    background: var(--gam-bg-card) !important;
+a {
+    color: var(--gam-accent);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+a:hover {
+    color: var(--gam-accent-light);
 }
 
 /* =============================================================================
-   IMAGE CHOOSER
+   FOCUS STATES
    ============================================================================= */
-.image-chooser,
-.chooser {
-    background: var(--gam-bg-hover) !important;
-    border: 2px dashed var(--gam-border) !important;
-    border-radius: 12px !important;
+*:focus-visible {
+    outline: 2px solid var(--gam-accent) !important;
+    outline-offset: 2px !important;
 }
 
-.image-chooser:hover,
-.chooser:hover {
-    border-color: var(--gam-accent) !important;
+/* =============================================================================
+   LOADING
+   ============================================================================= */
+.loading-mask {
+    background: rgba(28, 21, 101, 0.9) !important;
 }
 
 /* =============================================================================
    RESPONSIVE
    ============================================================================= */
 @media (max-width: 768px) {
-    .sidebar {
+    .sidebar,
+    [data-sidebar] {
         background: var(--gam-primary-dark) !important;
     }
 
-    .w-panel,
-    .object {
-        border-radius: 12px !important;
-        margin: 10px !important;
+    .w-panel {
+        border-radius: 10px !important;
+        margin: 8px !important;
     }
-}
-
-/* =============================================================================
-   WAGTAIL SPECIFIC OVERRIDES
-   ============================================================================= */
-
-/* Page explorer */
-.c-page-explorer {
-    background: var(--gam-bg-card) !important;
-}
-
-/* Comments */
-.w-comment {
-    background: var(--gam-bg-hover) !important;
-    border: 1px solid var(--gam-border) !important;
-    border-radius: 12px !important;
-}
-
-/* Loading spinner */
-.loading-mask {
-    background: rgba(28, 21, 101, 0.9) !important;
-}
-
-/* Focus states */
-*:focus-visible {
-    outline: 2px solid var(--gam-accent) !important;
-    outline-offset: 2px !important;
-}
-
-/* Links */
-a {
-    color: var(--gam-accent) !important;
-}
-
-a:hover {
-    color: var(--gam-accent-light) !important;
-}
-
-/* Code blocks */
-code, pre {
-    background: var(--gam-bg-input) !important;
-    border: 1px solid var(--gam-border) !important;
-    border-radius: 6px !important;
-    color: var(--gam-accent) !important;
 }
