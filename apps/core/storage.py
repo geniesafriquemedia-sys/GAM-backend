@@ -4,7 +4,23 @@ Organise les médias dans des dossiers structurés sur Cloudinary.
 """
 
 from django.conf import settings
-from cloudinary_storage.storage import MediaCloudinaryStorage
+from cloudinary_storage.storage import MediaCloudinaryStorage, RawMediaCloudinaryStorage
+import cloudinary
+
+
+class GAMCloudinaryStorage(MediaCloudinaryStorage):
+    """
+    Storage personnalisé pour GAM sans préfixe 'media/'.
+    Les fichiers sont stockés directement avec leur chemin upload_to.
+    """
+
+    def url(self, name):
+        """Retourne l'URL Cloudinary sans le préfixe media."""
+        if not name:
+            return ''
+        # Construire l'URL directement sans préfixe
+        cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME')
+        return f"https://res.cloudinary.com/{cloud_name}/image/upload/{name}"
 
 
 class ArticleImageStorage(MediaCloudinaryStorage):

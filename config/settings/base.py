@@ -207,7 +207,7 @@ CLOUDINARY_STORAGE = {
 USE_CLOUDINARY = config('USE_CLOUDINARY', default=False, cast=bool)
 
 if USE_CLOUDINARY:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    DEFAULT_FILE_STORAGE = 'apps.core.storage.GAMCloudinaryStorage'
 
 
 # =============================================================================
