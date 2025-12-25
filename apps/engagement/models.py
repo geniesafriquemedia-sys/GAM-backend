@@ -165,3 +165,94 @@ class ContactMessage(TimeStampedModel):
         self.replied_at = timezone.now()
         self.replied_by = user
         self.save(update_fields=['status', 'replied_at', 'replied_by'])
+
+
+class ContentNotificationStatus(models.TextChoices):
+    """Statuts partagés pour les notifications de contenu."""
+    PENDING = 'pending', 'En attente'
+    SENT = 'sent', 'Envoyé'
+    FAILED = 'failed', 'Échoué'
+
+
+class ArticleNotification(TimeStampedModel):
+    """
+    Modèle pour tracker les notifications d'articles envoyées.
+    Évite les doublons et permet le suivi des campagnes.
+    """
+
+    article_id = models.PositiveBigIntegerField(
+        'ID Article',
+        unique=True,
+        db_index=True,
+        help_text='ID de l\'article notifié'
+    )
+    campaign_id = models.CharField(
+        'ID Campagne',
+        max_length=100,
+        blank=True,
+        help_text='ID de la campagne Brevo'
+    )
+    status = models.CharField(
+        'Statut',
+        max_length=20,
+        choices=ContentNotificationStatus.choices,
+        default=ContentNotificationStatus.PENDING
+    )
+    error_message = models.TextField(
+        'Message d\'erreur',
+        blank=True
+    )
+    sent_at = models.DateTimeField(
+        'Date d\'envoi',
+        auto_now_add=True
+    )
+
+    class Meta:
+        verbose_name = 'Notification article'
+        verbose_name_plural = 'Notifications articles'
+        ordering = ['-sent_at']
+
+    def __str__(self):
+        return f'Notification article {self.article_id} ({self.get_status_display()})'
+
+
+class VideoNotification(TimeStampedModel):
+    """
+    Modèle pour tracker les notifications de vidéos envoyées.
+    Évite les doublons et permet le suivi des campagnes.
+    """
+
+    video_id = models.PositiveBigIntegerField(
+        'ID Vidéo',
+        unique=True,
+        db_index=True,
+        help_text='ID de la vidéo notifiée'
+    )
+    campaign_id = models.CharField(
+        'ID Campagne',
+        max_length=100,
+        blank=True,
+        help_text='ID de la campagne Brevo'
+    )
+    status = models.CharField(
+        'Statut',
+        max_length=20,
+        choices=ContentNotificationStatus.choices,
+        default=ContentNotificationStatus.PENDING
+    )
+    error_message = models.TextField(
+        'Message d\'erreur',
+        blank=True
+    )
+    sent_at = models.DateTimeField(
+        'Date d\'envoi',
+        auto_now_add=True
+    )
+
+    class Meta:
+        verbose_name = 'Notification vidéo'
+        verbose_name_plural = 'Notifications vidéos'
+        ordering = ['-sent_at']
+
+    def __str__(self):
+        return f'Notification vidéo {self.video_id} ({self.get_status_display()})'

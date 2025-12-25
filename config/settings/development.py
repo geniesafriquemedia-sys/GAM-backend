@@ -85,6 +85,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': None,
         'user': None,
+        'newsletter': None,  # Pas de limite en dev
+        'contact': None,  # Pas de limite en dev
     },
 }
 

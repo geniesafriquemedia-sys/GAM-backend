@@ -6,6 +6,7 @@ from rest_framework import generics, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.throttling import ScopedRateThrottle
 from drf_spectacular.utils import extend_schema
 
 from .models import NewsletterSubscription, ContactMessage
@@ -29,9 +30,11 @@ class NewsletterSubscribeView(generics.GenericAPIView):
     Inscription à la newsletter (US-10).
     Validation email + envoi vers Brevo/Mailchimp.
     """
+    authentication_classes = []  # Pas d'authentification requise (public)
     permission_classes = [AllowAny]
-    serializer_class = NewsletterSubscribeSerializer
+    throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'newsletter'
+    serializer_class = NewsletterSubscribeSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -40,24 +43,33 @@ class NewsletterSubscribeView(generics.GenericAPIView):
         data = serializer.validated_data
         ip_address = self._get_client_ip(request)
 
-        result = subscribe_to_newsletter(
-            email=data['email'],
-            ip_address=ip_address,
-            source=data.get('source', 'website'),
-            first_name=data.get('first_name', ''),
-            last_name=data.get('last_name', ''),
-        )
-
-        if result.get('already_subscribed'):
-            return Response(
-                {'message': 'Vous êtes déjà inscrit à notre newsletter.'},
-                status=status.HTTP_200_OK
+        try:
+            result = subscribe_to_newsletter(
+                email=data['email'],
+                ip_address=ip_address,
+                source=data.get('source', 'website'),
+                first_name=data.get('first_name', ''),
+                last_name=data.get('last_name', ''),
             )
 
-        return Response(
-            {'message': 'Inscription réussie ! Merci de votre intérêt.'},
-            status=status.HTTP_201_CREATED
-        )
+            if result.get('already_subscribed'):
+                return Response(
+                    {'message': 'Vous êtes déjà inscrit à notre newsletter.'},
+                    status=status.HTTP_200_OK
+                )
+
+            return Response(
+                {'message': 'Inscription réussie ! Merci de votre intérêt.'},
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f'Newsletter subscription error: {e}', exc_info=True)
+            return Response(
+                {'error': 'Une erreur est survenue. Veuillez réessayer.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def _get_client_ip(self, request):
         """Récupère l'adresse IP du client."""
@@ -72,6 +84,7 @@ class NewsletterUnsubscribeView(generics.GenericAPIView):
     """
     Désabonnement de la newsletter.
     """
+    authentication_classes = []  # Pas d'authentification requise (public)
     permission_classes = [AllowAny]
     serializer_class = NewsletterUnsubscribeSerializer
 
@@ -146,9 +159,11 @@ class ContactMessageCreateView(generics.CreateAPIView):
     """
     Envoi d'un message de contact.
     """
+    authentication_classes = []  # Pas d'authentification requise (public)
     permission_classes = [AllowAny]
-    serializer_class = ContactMessageCreateSerializer
+    throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'contact'
+    serializer_class = ContactMessageCreateSerializer
 
     def perform_create(self, serializer):
         ip_address = self._get_client_ip(self.request)

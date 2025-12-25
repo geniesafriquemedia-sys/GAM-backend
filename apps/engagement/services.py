@@ -67,9 +67,17 @@ class BrevoService(BaseNewsletterService):
         """
         Inscrit un email à la newsletter via Brevo.
         """
+        # Construire la liste des IDs de liste
+        list_ids = []
+        if self.list_id:
+            try:
+                list_ids = [int(self.list_id)]
+            except (ValueError, TypeError):
+                logger.warning(f'Invalid BREVO_LIST_ID: {self.list_id}')
+
         data = {
             'email': email,
-            'listIds': [int(self.list_id)] if self.list_id else [],
+            'listIds': list_ids,
             'updateEnabled': True,
         }
 
@@ -86,7 +94,13 @@ class BrevoService(BaseNewsletterService):
 
         if response.status_code in [200, 201, 204]:
             logger.info(f'Successfully subscribed {email} to Brevo')
-            return {'success': True, 'id': response.json().get('id')}
+            # 204 = No Content, pas de body JSON
+            if response.status_code == 204 or not response.text:
+                return {'success': True}
+            try:
+                return {'success': True, 'id': response.json().get('id')}
+            except Exception:
+                return {'success': True}
         elif response.status_code == 400:
             error_data = response.json()
             if 'duplicate' in str(error_data).lower():
@@ -131,6 +145,258 @@ class BrevoService(BaseNewsletterService):
             return None
         else:
             raise NewsletterServiceError(f'Erreur Brevo: {response.status_code}')
+
+    def send_article_notification(
+        self,
+        article_title: str,
+        article_excerpt: str,
+        article_url: str,
+        article_image_url: str = '',
+        author_name: str = '',
+        category_name: str = ''
+    ) -> Dict[str, Any]:
+        """
+        Envoie une notification email à tous les abonnés pour un nouvel article.
+        Utilise l'API Brevo pour créer et envoyer une campagne.
+        """
+        if not self.list_id:
+            raise NewsletterServiceError('BREVO_LIST_ID non configuré')
+
+        # Créer le contenu HTML de l'email
+        html_content = f'''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f5;padding:40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color:#18181b;padding:30px;text-align:center;">
+                            <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:800;">Geniesdafriquemedia</h1>
+                            <p style="margin:10px 0 0;color:#a1a1aa;font-size:12px;text-transform:uppercase;letter-spacing:2px;">Nouvel Article</p>
+                        </td>
+                    </tr>
+
+                    <!-- Image -->
+                    {f'<tr><td><img src="{article_image_url}" width="600" style="width:100%;height:auto;display:block;" alt="{article_title}"></td></tr>' if article_image_url else ''}
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding:40px;">
+                            <!-- Category Badge -->
+                            {f'<p style="margin:0 0 15px;"><span style="background-color:#f59e0b;color:#ffffff;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">{category_name}</span></p>' if category_name else ''}
+
+                            <!-- Title -->
+                            <h2 style="margin:0 0 20px;font-size:28px;font-weight:800;color:#18181b;line-height:1.3;">
+                                {article_title}
+                            </h2>
+
+                            <!-- Author -->
+                            {f'<p style="margin:0 0 20px;color:#71717a;font-size:14px;">Par <strong>{author_name}</strong></p>' if author_name else ''}
+
+                            <!-- Excerpt -->
+                            <p style="margin:0 0 30px;color:#52525b;font-size:16px;line-height:1.7;">
+                                {article_excerpt}
+                            </p>
+
+                            <!-- CTA Button -->
+                            <a href="{article_url}" style="display:inline-block;background-color:#f59e0b;color:#ffffff;padding:16px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;">
+                                Lire l'article →
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color:#fafafa;padding:30px;text-align:center;border-top:1px solid #e5e5e5;">
+                            <p style="margin:0 0 10px;color:#71717a;font-size:12px;">
+                                Vous recevez cet email car vous êtes inscrit à notre newsletter.
+                            </p>
+                            <p style="margin:0;color:#a1a1aa;font-size:11px;">
+                                © 2025 Geniesdafriquemedia. Tous droits réservés.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+'''
+
+        # Créer la campagne
+        campaign_data = {
+            'name': f'Nouvel article: {article_title[:50]}',
+            'subject': f'🆕 {article_title}',
+            'sender': {
+                'name': 'Geniesdafriquemedia',
+                'email': 'geniesdafriquemedia@gmail.com'
+            },
+            'type': 'classic',
+            'htmlContent': html_content,
+            'recipients': {
+                'listIds': [int(self.list_id)]
+            },
+        }
+
+        # Créer la campagne
+        response = self._make_request('POST', 'emailCampaigns', campaign_data)
+
+        if response.status_code in [200, 201]:
+            campaign_id = response.json().get('id')
+            logger.info(f'Campaign created: {campaign_id}')
+
+            # Envoyer immédiatement la campagne
+            send_response = self._make_request('POST', f'emailCampaigns/{campaign_id}/sendNow')
+
+            if send_response.status_code in [200, 201, 204]:
+                logger.info(f'Campaign {campaign_id} sent successfully')
+                return {'success': True, 'campaign_id': campaign_id}
+            else:
+                logger.error(f'Failed to send campaign: {send_response.text}')
+                raise NewsletterServiceError(f'Erreur envoi campagne: {send_response.status_code}')
+        else:
+            logger.error(f'Failed to create campaign: {response.text}')
+            raise NewsletterServiceError(f'Erreur création campagne: {response.status_code}')
+
+    def send_video_notification(
+        self,
+        video_title: str,
+        video_description: str,
+        video_url: str,
+        video_thumbnail_url: str = '',
+        video_type: str = '',
+        youtube_url: str = ''
+    ) -> Dict[str, Any]:
+        """
+        Envoie une notification email à tous les abonnés pour une nouvelle vidéo.
+        """
+        if not self.list_id:
+            raise NewsletterServiceError('BREVO_LIST_ID non configuré')
+
+        # Créer le contenu HTML de l'email
+        html_content = f'''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f5;padding:40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color:#18181b;padding:30px;text-align:center;">
+                            <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:800;">Geniesdafriquemedia</h1>
+                            <p style="margin:10px 0 0;color:#a1a1aa;font-size:12px;text-transform:uppercase;letter-spacing:2px;">📺 Nouvelle Vidéo Web TV</p>
+                        </td>
+                    </tr>
+
+                    <!-- Thumbnail avec play button -->
+                    {f'''<tr>
+                        <td style="position:relative;">
+                            <a href="{video_url}" style="display:block;position:relative;">
+                                <img src="{video_thumbnail_url}" width="600" style="width:100%;height:auto;display:block;" alt="{video_title}">
+                                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;background-color:rgba(245,158,11,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                    <div style="width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid white;margin-left:5px;"></div>
+                                </div>
+                            </a>
+                        </td>
+                    </tr>''' if video_thumbnail_url else ''}
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding:40px;">
+                            <!-- Video Type Badge -->
+                            {f'<p style="margin:0 0 15px;"><span style="background-color:#dc2626;color:#ffffff;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">▶ {video_type}</span></p>' if video_type else ''}
+
+                            <!-- Title -->
+                            <h2 style="margin:0 0 20px;font-size:28px;font-weight:800;color:#18181b;line-height:1.3;">
+                                {video_title}
+                            </h2>
+
+                            <!-- Description -->
+                            <p style="margin:0 0 30px;color:#52525b;font-size:16px;line-height:1.7;">
+                                {video_description[:300]}{'...' if len(video_description) > 300 else ''}
+                            </p>
+
+                            <!-- CTA Buttons -->
+                            <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                                <tr>
+                                    <td style="padding-right:10px;">
+                                        <a href="{video_url}" style="display:inline-block;background-color:#f59e0b;color:#ffffff;padding:16px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;">
+                                            Regarder sur GAM →
+                                        </a>
+                                    </td>
+                                    {f'<td><a href="{youtube_url}" style="display:inline-block;background-color:#dc2626;color:#ffffff;padding:16px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;">▶ YouTube</a></td>' if youtube_url else ''}
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color:#fafafa;padding:30px;text-align:center;border-top:1px solid #e5e5e5;">
+                            <p style="margin:0 0 10px;color:#71717a;font-size:12px;">
+                                Vous recevez cet email car vous êtes inscrit à notre newsletter.
+                            </p>
+                            <p style="margin:0;color:#a1a1aa;font-size:11px;">
+                                © 2025 Geniesdafriquemedia. Tous droits réservés.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+'''
+
+        # Créer la campagne
+        campaign_data = {
+            'name': f'Nouvelle vidéo: {video_title[:50]}',
+            'subject': f'📺 {video_title}',
+            'sender': {
+                'name': 'Geniesdafriquemedia',
+                'email': 'geniesdafriquemedia@gmail.com'
+            },
+            'type': 'classic',
+            'htmlContent': html_content,
+            'recipients': {
+                'listIds': [int(self.list_id)]
+            },
+        }
+
+        # Créer la campagne
+        response = self._make_request('POST', 'emailCampaigns', campaign_data)
+
+        if response.status_code in [200, 201]:
+            campaign_id = response.json().get('id')
+            logger.info(f'Video campaign created: {campaign_id}')
+
+            # Envoyer immédiatement la campagne
+            send_response = self._make_request('POST', f'emailCampaigns/{campaign_id}/sendNow')
+
+            if send_response.status_code in [200, 201, 204]:
+                logger.info(f'Video campaign {campaign_id} sent successfully')
+                return {'success': True, 'campaign_id': campaign_id}
+            else:
+                logger.error(f'Failed to send video campaign: {send_response.text}')
+                raise NewsletterServiceError(f'Erreur envoi campagne vidéo: {send_response.status_code}')
+        else:
+            logger.error(f'Failed to create video campaign: {response.text}')
+            raise NewsletterServiceError(f'Erreur création campagne vidéo: {response.status_code}')
 
 
 class MailchimpService(BaseNewsletterService):
@@ -282,6 +548,7 @@ def subscribe_to_newsletter(email: str, ip_address: str = None, source: str = ''
             'ip_address': ip_address,
             'source': source,
             'status': NewsletterSubscription.Status.CONFIRMED,
+            'confirmed_at': timezone.now(),
         }
     )
 
@@ -314,3 +581,133 @@ def subscribe_to_newsletter(email: str, ip_address: str = None, source: str = ''
 
         # On retourne quand même succès car l'inscription locale a réussi
         return {'success': True, 'created': created, 'sync_warning': str(e)}
+
+
+def send_article_notification(article) -> Dict[str, Any]:
+    """
+    Envoie une notification email pour un nouvel article publié.
+    Évite les doublons en vérifiant si une notification a déjà été envoyée.
+    """
+    from .models import ArticleNotification
+
+    # Vérifier si une notification a déjà été envoyée pour cet article
+    if ArticleNotification.objects.filter(article_id=article.id).exists():
+        logger.info(f'Notification already sent for article {article.id}')
+        return {'success': True, 'already_sent': True}
+
+    # Construire l'URL de l'article
+    frontend_url = getattr(settings, 'FRONTEND_URL', 'https://geniesdafriquemedia.com')
+    article_url = f'{frontend_url}/articles/{article.slug}'
+
+    # Construire l'URL de l'image
+    article_image_url = ''
+    if article.image_url:
+        if article.image_url.startswith('http'):
+            article_image_url = article.image_url
+        else:
+            backend_url = getattr(settings, 'BACKEND_URL', 'http://localhost:8000')
+            article_image_url = f'{backend_url}{article.image_url}'
+
+    try:
+        service = get_newsletter_service()
+
+        # Vérifier que le service supporte les notifications
+        if not hasattr(service, 'send_article_notification'):
+            logger.warning('Newsletter service does not support article notifications')
+            return {'success': False, 'error': 'Service non supporté'}
+
+        result = service.send_article_notification(
+            article_title=article.title,
+            article_excerpt=article.excerpt or '',
+            article_url=article_url,
+            article_image_url=article_image_url,
+            author_name=article.author.name if article.author else '',
+            category_name=article.category.name if article.category else ''
+        )
+
+        # Enregistrer la notification envoyée
+        ArticleNotification.objects.create(
+            article_id=article.id,
+            campaign_id=result.get('campaign_id', ''),
+            status='sent'
+        )
+
+        logger.info(f'Article notification sent for: {article.title}')
+        return result
+
+    except NewsletterServiceError as e:
+        logger.error(f'Failed to send article notification: {e}')
+
+        # Enregistrer l'échec
+        ArticleNotification.objects.create(
+            article_id=article.id,
+            status='failed',
+            error_message=str(e)
+        )
+
+        return {'success': False, 'error': str(e)}
+
+
+def send_video_notification(video) -> Dict[str, Any]:
+    """
+    Envoie une notification email pour une nouvelle vidéo publiée.
+    Évite les doublons en vérifiant si une notification a déjà été envoyée.
+    """
+    from .models import VideoNotification
+
+    # Vérifier si une notification a déjà été envoyée pour cette vidéo
+    if VideoNotification.objects.filter(video_id=video.id).exists():
+        logger.info(f'Notification already sent for video {video.id}')
+        return {'success': True, 'already_sent': True}
+
+    # Construire l'URL de la vidéo
+    frontend_url = getattr(settings, 'FRONTEND_URL', 'https://geniesdafriquemedia.com')
+    video_url = f'{frontend_url}/web-tv/{video.slug}'
+
+    # Construire l'URL de la miniature
+    video_thumbnail_url = ''
+    if video.thumbnail_url:
+        if video.thumbnail_url.startswith('http'):
+            video_thumbnail_url = video.thumbnail_url
+        else:
+            backend_url = getattr(settings, 'BACKEND_URL', 'http://localhost:8000')
+            video_thumbnail_url = f'{backend_url}{video.thumbnail_url}'
+
+    try:
+        service = get_newsletter_service()
+
+        # Vérifier que le service supporte les notifications vidéo
+        if not hasattr(service, 'send_video_notification'):
+            logger.warning('Newsletter service does not support video notifications')
+            return {'success': False, 'error': 'Service non supporté'}
+
+        result = service.send_video_notification(
+            video_title=video.title,
+            video_description=video.description or '',
+            video_url=video_url,
+            video_thumbnail_url=video_thumbnail_url,
+            video_type=video.get_video_type_display() if hasattr(video, 'get_video_type_display') else '',
+            youtube_url=video.youtube_url or ''
+        )
+
+        # Enregistrer la notification envoyée
+        VideoNotification.objects.create(
+            video_id=video.id,
+            campaign_id=result.get('campaign_id', ''),
+            status='sent'
+        )
+
+        logger.info(f'Video notification sent for: {video.title}')
+        return result
+
+    except NewsletterServiceError as e:
+        logger.error(f'Failed to send video notification: {e}')
+
+        # Enregistrer l'échec
+        VideoNotification.objects.create(
+            video_id=video.id,
+            status='failed',
+            error_message=str(e)
+        )
+
+        return {'success': False, 'error': str(e)}

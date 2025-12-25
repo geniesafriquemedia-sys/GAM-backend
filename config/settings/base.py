@@ -223,6 +223,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/hour',
         'user': '1000/hour',
+        'newsletter': '10/hour',  # Limite pour les inscriptions newsletter
+        'contact': '5/hour',  # Limite pour les messages de contact
     },
 }
 
@@ -268,11 +270,6 @@ CORS_ALLOW_HEADERS = [
 ]
 
 # =============================================================================
-# FRONTEND URL (pour les liens dans Wagtail admin)
-# =============================================================================
-FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
-
-# =============================================================================
 # API DOCUMENTATION (drf-spectacular)
 # =============================================================================
 SPECTACULAR_SETTINGS = {
@@ -314,6 +311,13 @@ BREVO_API_KEY = config('BREVO_API_KEY', default='')
 BREVO_LIST_ID = config('BREVO_LIST_ID', default='')
 MAILCHIMP_API_KEY = config('MAILCHIMP_API_KEY', default='')
 MAILCHIMP_LIST_ID = config('MAILCHIMP_LIST_ID', default='')
+
+# Activer l'envoi automatique de newsletters à la publication d'articles
+ENABLE_ARTICLE_NOTIFICATIONS = config('ENABLE_ARTICLE_NOTIFICATIONS', default=True, cast=bool)
+
+# URL du frontend pour les liens dans les emails
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
+BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
 
 # =============================================================================
 # WAGTAIL SETTINGS

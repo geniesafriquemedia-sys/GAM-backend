@@ -4,7 +4,7 @@ Engagement Admin - Administration des inscriptions newsletter et contacts
 
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import NewsletterSubscription, ContactMessage
+from .models import NewsletterSubscription, ContactMessage, ArticleNotification, VideoNotification
 
 
 @admin.register(NewsletterSubscription)
@@ -154,3 +154,67 @@ class ContactMessageAdmin(admin.ModelAdmin):
     def archive_messages(self, request, queryset):
         updated = queryset.update(status=ContactMessage.Status.ARCHIVED)
         self.message_user(request, f'{updated} message(s) archivé(s).')
+
+
+@admin.register(ArticleNotification)
+class ArticleNotificationAdmin(admin.ModelAdmin):
+    """Administration des notifications d'articles."""
+
+    list_display = [
+        'article_id', 'status_badge', 'campaign_id', 'sent_at'
+    ]
+    list_filter = ['status', 'sent_at']
+    search_fields = ['article_id', 'campaign_id']
+    ordering = ['-sent_at']
+    readonly_fields = ['article_id', 'campaign_id', 'status', 'error_message', 'sent_at']
+
+    def status_badge(self, obj):
+        colors = {
+            'pending': '#FFA500',
+            'sent': '#28A745',
+            'failed': '#DC3545',
+        }
+        color = colors.get(obj.status, '#6C757D')
+        return format_html(
+            '<span style="background-color: {}; padding: 3px 10px; border-radius: 3px; color: white; font-size: 11px;">{}</span>',
+            color, obj.get_status_display()
+        )
+    status_badge.short_description = 'Statut'
+
+    def has_add_permission(self, request):
+        return False  # Les notifications sont créées automatiquement
+
+    def has_change_permission(self, request, obj=None):
+        return False  # Lecture seule
+
+
+@admin.register(VideoNotification)
+class VideoNotificationAdmin(admin.ModelAdmin):
+    """Administration des notifications de vidéos."""
+
+    list_display = [
+        'video_id', 'status_badge', 'campaign_id', 'sent_at'
+    ]
+    list_filter = ['status', 'sent_at']
+    search_fields = ['video_id', 'campaign_id']
+    ordering = ['-sent_at']
+    readonly_fields = ['video_id', 'campaign_id', 'status', 'error_message', 'sent_at']
+
+    def status_badge(self, obj):
+        colors = {
+            'pending': '#FFA500',
+            'sent': '#28A745',
+            'failed': '#DC3545',
+        }
+        color = colors.get(obj.status, '#6C757D')
+        return format_html(
+            '<span style="background-color: {}; padding: 3px 10px; border-radius: 3px; color: white; font-size: 11px;">{}</span>',
+            color, obj.get_status_display()
+        )
+    status_badge.short_description = 'Statut'
+
+    def has_add_permission(self, request):
+        return False  # Les notifications sont créées automatiquement
+
+    def has_change_permission(self, request, obj=None):
+        return False  # Lecture seule
