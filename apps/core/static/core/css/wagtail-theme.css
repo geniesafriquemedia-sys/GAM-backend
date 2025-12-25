@@ -1,35 +1,40 @@
 /*
  * GAM Wagtail Admin Theme
- * Thème moderne sombre pour le dashboard Wagtail
+ * Thème officiel Génies d'Afrique Médias
  */
 
 /* =============================================================================
-   VARIABLES - Couleurs GAM
+   VARIABLES - Couleurs GAM Officielles
    ============================================================================= */
 :root {
-    /* Couleurs principales */
-    --gam-primary: #f97316;
-    --gam-primary-light: #fb923c;
-    --gam-primary-dark: #ea580c;
+    /* Couleur principale - Bleu fond */
+    --gam-primary: #1C1565;
+    --gam-primary-light: #2a2080;
+    --gam-primary-dark: #140f4a;
 
-    /* Fond sombre */
-    --gam-bg-dark: #0a0a0a;
-    --gam-bg-card: #141414;
-    --gam-bg-hover: #1f1f1f;
-    --gam-bg-input: #1a1a1a;
+    /* Couleur secondaire - Jaune/Or */
+    --gam-accent: #E5A341;
+    --gam-accent-light: #f0b85a;
+    --gam-accent-dark: #c98a2e;
 
     /* Textes */
-    --gam-text-primary: #fafafa;
-    --gam-text-secondary: #a1a1aa;
-    --gam-text-muted: #71717a;
+    --gam-text-primary: #FFFFFF;
+    --gam-text-secondary: #D2D2DC;
+    --gam-text-muted: #a0a0b0;
+
+    /* Fonds */
+    --gam-bg-dark: #1C1565;
+    --gam-bg-card: #241a75;
+    --gam-bg-hover: #2d2185;
+    --gam-bg-input: #1a1260;
 
     /* Bordures */
-    --gam-border: #27272a;
-    --gam-border-light: #3f3f46;
+    --gam-border: #3d3195;
+    --gam-border-light: #4d41a5;
 
     /* États */
     --gam-success: #22c55e;
-    --gam-warning: #eab308;
+    --gam-warning: #E5A341;
     --gam-error: #ef4444;
     --gam-info: #3b82f6;
 }
@@ -39,13 +44,13 @@
    ============================================================================= */
 :root {
     /* Primary colors */
-    --w-color-primary: var(--gam-primary) !important;
-    --w-color-primary-200: var(--gam-primary-light) !important;
+    --w-color-primary: var(--gam-accent) !important;
+    --w-color-primary-200: var(--gam-accent-light) !important;
 
     /* Secondary/accent */
-    --w-color-secondary: var(--gam-primary) !important;
+    --w-color-secondary: var(--gam-accent) !important;
 
-    /* Surface colors - Dark theme */
+    /* Surface colors - Dark blue theme */
     --w-color-surface-page: var(--gam-bg-dark) !important;
     --w-color-surface-field: var(--gam-bg-input) !important;
     --w-color-surface-header: var(--gam-bg-card) !important;
@@ -66,7 +71,7 @@
     --w-color-border-field-default: var(--gam-border) !important;
     --w-color-border-field-hover: var(--gam-border-light) !important;
 
-    /* Border radius - Plus arrondis */
+    /* Border radius */
     --w-border-radius-large: 16px !important;
     --w-border-radius-medium: 12px !important;
     --w-border-radius-small: 8px !important;
@@ -91,7 +96,7 @@ button {
    SIDEBAR
    ============================================================================= */
 .sidebar {
-    background: var(--gam-bg-card) !important;
+    background: var(--gam-primary-dark) !important;
     border-right: 1px solid var(--gam-border) !important;
 }
 
@@ -107,24 +112,75 @@ button {
 }
 
 .sidebar-menu-item.is-active {
-    background: var(--gam-primary) !important;
+    background: var(--gam-accent) !important;
 }
 
-.sidebar-menu-item.is-active a {
-    color: white !important;
+.sidebar-menu-item.is-active a,
+.sidebar-menu-item.is-active .sidebar-menu-item__link {
+    color: var(--gam-primary-dark) !important;
 }
 
-/* Logo area */
+.sidebar-menu-item.is-active .icon {
+    color: var(--gam-primary-dark) !important;
+}
+
+/* =============================================================================
+   LOGO GAM - Remplacement de l'oiseau Wagtail
+   ============================================================================= */
 .sidebar-wagtail-branding {
-    background: transparent !important;
+    background: var(--gam-primary-dark) !important;
     border-bottom: 1px solid var(--gam-border) !important;
-    padding: 20px !important;
+    padding: 16px !important;
 }
 
+/* Cacher l'icône Wagtail par défaut */
 .sidebar-wagtail-branding__icon {
-    background: linear-gradient(135deg, var(--gam-primary), var(--gam-primary-dark)) !important;
-    border-radius: 12px !important;
-    padding: 8px !important;
+    display: none !important;
+}
+
+/* Logo GAM textuel */
+.sidebar-wagtail-branding::before {
+    content: "GÉNIES D'AFRIQUE";
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-align: center;
+    padding: 12px 8px;
+    background: linear-gradient(135deg, var(--gam-primary), var(--gam-primary-light));
+    border-radius: 12px;
+    border: 2px solid var(--gam-accent);
+}
+
+/* Couleurs du texte du logo */
+.sidebar-wagtail-branding::before {
+    background:
+        linear-gradient(90deg,
+            var(--gam-accent) 0%,
+            var(--gam-accent) 40%,
+            var(--gam-text-primary) 40%,
+            var(--gam-text-primary) 100%
+        );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+}
+
+/* Alternative: fond avec texte */
+.sidebar-wagtail-branding {
+    position: relative;
+}
+
+.sidebar-wagtail-branding::after {
+    content: "MÉDIAS";
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-align: center;
+    color: var(--gam-text-secondary);
+    margin-top: 4px;
 }
 
 /* Sous-menus */
@@ -138,13 +194,15 @@ button {
 /* =============================================================================
    HEADER
    ============================================================================= */
-.w-header {
+.w-header,
+header {
     background: var(--gam-bg-card) !important;
     border-bottom: 1px solid var(--gam-border) !important;
 }
 
 .w-header h1,
-.w-header h2 {
+.w-header h2,
+h1, h2, h3, h4 {
     color: var(--gam-text-primary) !important;
     font-weight: 700 !important;
 }
@@ -160,7 +218,7 @@ button {
 }
 
 .w-breadcrumbs a:hover {
-    color: var(--gam-primary) !important;
+    color: var(--gam-accent) !important;
 }
 
 /* =============================================================================
@@ -168,21 +226,24 @@ button {
    ============================================================================= */
 .content-wrapper,
 .content,
-main {
+main,
+.w-main {
     background: var(--gam-bg-dark) !important;
 }
 
 /* Panels/Cards */
 .w-panel,
 .nice-padding,
-.object {
+.object,
+section {
     background: var(--gam-bg-card) !important;
     border: 1px solid var(--gam-border) !important;
     border-radius: 16px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
-.w-panel__heading {
+.w-panel__heading,
+.w-label {
     background: transparent !important;
     border-bottom: 1px solid var(--gam-border) !important;
     color: var(--gam-text-primary) !important;
@@ -193,7 +254,8 @@ main {
    ============================================================================= */
 .button,
 button[type="submit"],
-.w-button {
+.w-button,
+[type="submit"] {
     border-radius: 10px !important;
     font-weight: 600 !important;
     transition: all 0.2s ease !important;
@@ -203,17 +265,27 @@ button[type="submit"],
 .button:hover,
 .w-button:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(229, 163, 65, 0.4) !important;
 }
 
+/* Bouton primaire - Jaune/Or GAM */
 .button.button-primary,
 .button.yes,
-.w-button--primary {
-    background: linear-gradient(135deg, var(--gam-primary), var(--gam-primary-dark)) !important;
+.w-button--primary,
+.button-small.button-primary,
+button.button-primary {
+    background: linear-gradient(135deg, var(--gam-accent), var(--gam-accent-dark)) !important;
     border: none !important;
-    color: white !important;
+    color: var(--gam-primary-dark) !important;
+    font-weight: 700 !important;
 }
 
+.button.button-primary:hover,
+.w-button--primary:hover {
+    background: linear-gradient(135deg, var(--gam-accent-light), var(--gam-accent)) !important;
+}
+
+/* Bouton secondaire */
 .button.button-secondary,
 .button.no,
 .w-button--secondary {
@@ -223,7 +295,8 @@ button[type="submit"],
 }
 
 /* Action buttons group */
-.actions {
+.actions,
+footer {
     background: var(--gam-bg-card) !important;
     border-top: 1px solid var(--gam-border) !important;
     border-radius: 0 0 16px 16px !important;
@@ -239,6 +312,8 @@ input[type="password"],
 input[type="url"],
 input[type="number"],
 input[type="search"],
+input[type="date"],
+input[type="datetime-local"],
 textarea,
 select,
 .tagit {
@@ -253,8 +328,8 @@ select,
 input:focus,
 textarea:focus,
 select:focus {
-    border-color: var(--gam-primary) !important;
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2) !important;
+    border-color: var(--gam-accent) !important;
+    box-shadow: 0 0 0 3px rgba(229, 163, 65, 0.25) !important;
     outline: none !important;
 }
 
@@ -278,6 +353,12 @@ label,
 .w-field__help {
     color: var(--gam-text-muted) !important;
     font-size: 13px !important;
+}
+
+/* Checkboxes et radios */
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: var(--gam-accent) !important;
 }
 
 /* =============================================================================
@@ -314,7 +395,11 @@ tbody td {
 }
 
 tbody td a {
-    color: var(--gam-primary) !important;
+    color: var(--gam-accent) !important;
+}
+
+tbody td a:hover {
+    color: var(--gam-accent-light) !important;
 }
 
 /* =============================================================================
@@ -322,7 +407,7 @@ tbody td a {
    ============================================================================= */
 .messages .success,
 .w-message--success {
-    background: rgba(34, 197, 94, 0.1) !important;
+    background: rgba(34, 197, 94, 0.15) !important;
     border: 1px solid var(--gam-success) !important;
     border-radius: 12px !important;
     color: var(--gam-success) !important;
@@ -330,7 +415,7 @@ tbody td a {
 
 .messages .error,
 .w-message--error {
-    background: rgba(239, 68, 68, 0.1) !important;
+    background: rgba(239, 68, 68, 0.15) !important;
     border: 1px solid var(--gam-error) !important;
     border-radius: 12px !important;
     color: var(--gam-error) !important;
@@ -338,7 +423,7 @@ tbody td a {
 
 .messages .warning,
 .w-message--warning {
-    background: rgba(234, 179, 8, 0.1) !important;
+    background: rgba(229, 163, 65, 0.15) !important;
     border: 1px solid var(--gam-warning) !important;
     border-radius: 12px !important;
     color: var(--gam-warning) !important;
@@ -365,22 +450,29 @@ tbody td a {
     border-radius: 12px !important;
     padding: 20px !important;
     transition: all 0.2s ease !important;
+    border: 1px solid var(--gam-border) !important;
 }
 
 .w-summary__item:hover {
     background: var(--gam-bg-input) !important;
     transform: translateY(-2px) !important;
+    border-color: var(--gam-accent) !important;
+}
+
+.w-summary__item a {
+    color: var(--gam-text-primary) !important;
 }
 
 /* =============================================================================
    MODALS
    ============================================================================= */
 .modal-content,
-.w-dialog {
+.w-dialog,
+[role="dialog"] {
     background: var(--gam-bg-card) !important;
     border: 1px solid var(--gam-border) !important;
     border-radius: 20px !important;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6) !important;
 }
 
 .modal-header {
@@ -405,16 +497,18 @@ tbody td a {
     border-radius: 8px !important;
     padding: 8px 14px !important;
     transition: all 0.2s ease !important;
+    color: var(--gam-text-primary) !important;
 }
 
 .pagination a:hover {
-    background: var(--gam-primary) !important;
-    color: white !important;
+    background: var(--gam-accent) !important;
+    color: var(--gam-primary-dark) !important;
 }
 
 .pagination .current {
-    background: var(--gam-primary) !important;
-    color: white !important;
+    background: var(--gam-accent) !important;
+    color: var(--gam-primary-dark) !important;
+    font-weight: 700 !important;
 }
 
 /* =============================================================================
@@ -424,17 +518,20 @@ tbody td a {
 [data-search-form] {
     background: var(--gam-bg-input) !important;
     border-radius: 12px !important;
+    border: 1px solid var(--gam-border) !important;
 }
 
 .w-header-search input {
     background: transparent !important;
     border: none !important;
+    color: var(--gam-text-primary) !important;
 }
 
 /* =============================================================================
    STREAMFIELD BLOCKS
    ============================================================================= */
-.c-sf-block {
+.c-sf-block,
+[data-streamfield-block] {
     background: var(--gam-bg-hover) !important;
     border: 1px solid var(--gam-border) !important;
     border-radius: 12px !important;
@@ -446,25 +543,42 @@ tbody td a {
     border-bottom: 1px solid var(--gam-border) !important;
 }
 
+.c-sf-add {
+    background: var(--gam-bg-card) !important;
+    border: 2px dashed var(--gam-border) !important;
+    border-radius: 12px !important;
+}
+
+.c-sf-add:hover {
+    border-color: var(--gam-accent) !important;
+    background: var(--gam-bg-hover) !important;
+}
+
 /* =============================================================================
    DROPDOWN MENUS
    ============================================================================= */
 .c-dropdown__menu,
-.tippy-content {
+.tippy-content,
+[data-tippy-root],
+.tippy-box {
     background: var(--gam-bg-card) !important;
     border: 1px solid var(--gam-border) !important;
     border-radius: 12px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
 }
 
-.c-dropdown__item {
+.c-dropdown__item,
+.tippy-content a {
     border-radius: 8px !important;
     margin: 4px !important;
     transition: background 0.2s ease !important;
+    color: var(--gam-text-primary) !important;
 }
 
-.c-dropdown__item:hover {
+.c-dropdown__item:hover,
+.tippy-content a:hover {
     background: var(--gam-bg-hover) !important;
+    color: var(--gam-accent) !important;
 }
 
 /* =============================================================================
@@ -478,8 +592,48 @@ tbody td a {
     color: var(--gam-text-muted) !important;
 }
 
-.sidebar-menu-item.is-active .icon {
-    color: white !important;
+.sidebar-menu-item:hover .icon {
+    color: var(--gam-accent) !important;
+}
+
+/* =============================================================================
+   TABS
+   ============================================================================= */
+.w-tabs__tab {
+    background: var(--gam-bg-hover) !important;
+    border: 1px solid var(--gam-border) !important;
+    color: var(--gam-text-secondary) !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.w-tabs__tab:hover {
+    background: var(--gam-bg-card) !important;
+    color: var(--gam-text-primary) !important;
+}
+
+.w-tabs__tab[aria-selected="true"],
+.w-tabs__tab.active {
+    background: var(--gam-accent) !important;
+    color: var(--gam-primary-dark) !important;
+    font-weight: 700 !important;
+}
+
+/* =============================================================================
+   STATUS BADGES
+   ============================================================================= */
+.status-tag,
+.w-status {
+    border-radius: 20px !important;
+    padding: 4px 12px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+}
+
+.status-tag.primary,
+.w-status--primary {
+    background: var(--gam-accent) !important;
+    color: var(--gam-primary-dark) !important;
 }
 
 /* =============================================================================
@@ -495,12 +649,12 @@ tbody td a {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--gam-border-light);
+    background: var(--gam-border);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--gam-text-muted);
+    background: var(--gam-accent);
 }
 
 /* =============================================================================
@@ -518,11 +672,34 @@ tbody td a {
 }
 
 /* =============================================================================
+   USERBAR (barre utilisateur en haut)
+   ============================================================================= */
+.w-userbar,
+.wagtail-userbar {
+    background: var(--gam-bg-card) !important;
+}
+
+/* =============================================================================
+   IMAGE CHOOSER
+   ============================================================================= */
+.image-chooser,
+.chooser {
+    background: var(--gam-bg-hover) !important;
+    border: 2px dashed var(--gam-border) !important;
+    border-radius: 12px !important;
+}
+
+.image-chooser:hover,
+.chooser:hover {
+    border-color: var(--gam-accent) !important;
+}
+
+/* =============================================================================
    RESPONSIVE
    ============================================================================= */
 @media (max-width: 768px) {
     .sidebar {
-        background: var(--gam-bg-card) !important;
+        background: var(--gam-primary-dark) !important;
     }
 
     .w-panel,
@@ -530,4 +707,48 @@ tbody td a {
         border-radius: 12px !important;
         margin: 10px !important;
     }
+}
+
+/* =============================================================================
+   WAGTAIL SPECIFIC OVERRIDES
+   ============================================================================= */
+
+/* Page explorer */
+.c-page-explorer {
+    background: var(--gam-bg-card) !important;
+}
+
+/* Comments */
+.w-comment {
+    background: var(--gam-bg-hover) !important;
+    border: 1px solid var(--gam-border) !important;
+    border-radius: 12px !important;
+}
+
+/* Loading spinner */
+.loading-mask {
+    background: rgba(28, 21, 101, 0.9) !important;
+}
+
+/* Focus states */
+*:focus-visible {
+    outline: 2px solid var(--gam-accent) !important;
+    outline-offset: 2px !important;
+}
+
+/* Links */
+a {
+    color: var(--gam-accent) !important;
+}
+
+a:hover {
+    color: var(--gam-accent-light) !important;
+}
+
+/* Code blocks */
+code, pre {
+    background: var(--gam-bg-input) !important;
+    border: 1px solid var(--gam-border) !important;
+    border-radius: 6px !important;
+    color: var(--gam-accent) !important;
 }
