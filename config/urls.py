@@ -15,6 +15,7 @@ from drf_spectacular.views import (
 
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
+from apps.users.views import SessionLogoutView
 
 # =============================================================================
 # API URL PATTERNS
@@ -43,7 +44,8 @@ urlpatterns = [
     # Django Admin
     path('admin/', admin.site.urls),
 
-    # Wagtail CMS Admin
+    # Wagtail CMS Admin - Logout personnalisé AVANT l'include Wagtail
+    path('cms/logout/', SessionLogoutView.as_view(), name='wagtail-logout'),
     path('cms/', include(wagtailadmin_urls)),
     path('documents/', include(wagtaildocs_urls)),
 
