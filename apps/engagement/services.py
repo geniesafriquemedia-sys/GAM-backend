@@ -266,6 +266,50 @@ class BrevoService(BaseNewsletterService):
             logger.error(f'Failed to create campaign: {response.text}')
             raise NewsletterServiceError(f'Erreur création campagne: {response.status_code}')
 
+    def send_transactional_email(
+        self,
+        to_email: str,
+        to_name: str,
+        subject: str,
+        html_content: str,
+        reply_to_email: str = None,
+        reply_to_name: str = None
+    ) -> Dict[str, Any]:
+        """
+        Envoie un email transactionnel via Brevo.
+        Utilisé pour les notifications de contact, confirmations, etc.
+        """
+        data = {
+            'sender': {
+                'name': 'Geniesdafriquemedia',
+                'email': 'geniesdafriquemedia@gmail.com'
+            },
+            'to': [
+                {
+                    'email': to_email,
+                    'name': to_name
+                }
+            ],
+            'subject': subject,
+            'htmlContent': html_content
+        }
+
+        if reply_to_email:
+            data['replyTo'] = {
+                'email': reply_to_email,
+                'name': reply_to_name or reply_to_email
+            }
+
+        response = self._make_request('POST', 'smtp/email', data)
+
+        if response.status_code in [200, 201, 202]:
+            message_id = response.json().get('messageId', '')
+            logger.info(f'Transactional email sent to {to_email}: {message_id}')
+            return {'success': True, 'message_id': message_id}
+        else:
+            logger.error(f'Failed to send transactional email: {response.text}')
+            raise NewsletterServiceError(f'Erreur envoi email: {response.status_code}')
+
     def send_video_notification(
         self,
         video_title: str,
@@ -710,4 +754,118 @@ def send_video_notification(video) -> Dict[str, Any]:
             error_message=str(e)
         )
 
+        return {'success': False, 'error': str(e)}
+
+
+def send_contact_notification(contact_message) -> Dict[str, Any]:
+    """
+    Envoie une notification email à l'admin quand un message de contact est reçu.
+    """
+    admin_email = getattr(settings, 'CONTACT_ADMIN_EMAIL', 'geniesdafriquemedia@gmail.com')
+    admin_name = getattr(settings, 'CONTACT_ADMIN_NAME', 'Geniesdafriquemedia')
+
+    # Créer le contenu HTML de l'email
+    html_content = f'''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f5;padding:40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color:#18181b;padding:30px;text-align:center;">
+                            <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:800;">Geniesdafriquemedia</h1>
+                            <p style="margin:10px 0 0;color:#a1a1aa;font-size:12px;text-transform:uppercase;letter-spacing:2px;">📩 Nouveau Message de Contact</p>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding:40px;">
+                            <!-- Alert Badge -->
+                            <p style="margin:0 0 20px;">
+                                <span style="background-color:#3b82f6;color:#ffffff;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">
+                                    Nouveau message
+                                </span>
+                            </p>
+
+                            <!-- Sender Info -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:30px;background-color:#f9fafb;border-radius:12px;padding:20px;">
+                                <tr>
+                                    <td style="padding:15px;">
+                                        <p style="margin:0 0 10px;color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">De</p>
+                                        <p style="margin:0;color:#18181b;font-size:18px;font-weight:700;">{contact_message.name}</p>
+                                        <p style="margin:5px 0 0;color:#3b82f6;font-size:14px;">
+                                            <a href="mailto:{contact_message.email}" style="color:#3b82f6;text-decoration:none;">{contact_message.email}</a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Subject -->
+                            <p style="margin:0 0 10px;color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Sujet</p>
+                            <h2 style="margin:0 0 25px;font-size:22px;font-weight:700;color:#18181b;line-height:1.3;">
+                                {contact_message.subject}
+                            </h2>
+
+                            <!-- Message -->
+                            <p style="margin:0 0 10px;color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Message</p>
+                            <div style="background-color:#f9fafb;border-left:4px solid #f59e0b;padding:20px;border-radius:0 12px 12px 0;margin-bottom:30px;">
+                                <p style="margin:0;color:#374151;font-size:16px;line-height:1.8;white-space:pre-wrap;">{contact_message.message}</p>
+                            </div>
+
+                            <!-- Reply Button -->
+                            <a href="mailto:{contact_message.email}?subject=Re: {contact_message.subject}" style="display:inline-block;background-color:#f59e0b;color:#ffffff;padding:16px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;">
+                                Répondre à {contact_message.name} →
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color:#fafafa;padding:25px;text-align:center;border-top:1px solid #e5e5e5;">
+                            <p style="margin:0 0 5px;color:#71717a;font-size:12px;">
+                                Message reçu le {contact_message.created_at.strftime('%d/%m/%Y à %H:%M')}
+                            </p>
+                            <p style="margin:0;color:#a1a1aa;font-size:11px;">
+                                © 2025 Geniesdafriquemedia - Formulaire de contact
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+'''
+
+    try:
+        service = get_newsletter_service()
+
+        # Vérifier que le service supporte les emails transactionnels
+        if not hasattr(service, 'send_transactional_email'):
+            logger.warning('Newsletter service does not support transactional emails')
+            return {'success': False, 'error': 'Service non supporté'}
+
+        result = service.send_transactional_email(
+            to_email=admin_email,
+            to_name=admin_name,
+            subject=f'📩 Contact: {contact_message.subject}',
+            html_content=html_content,
+            reply_to_email=contact_message.email,
+            reply_to_name=contact_message.name
+        )
+
+        logger.info(f'Contact notification sent for message from: {contact_message.email}')
+        return result
+
+    except NewsletterServiceError as e:
+        logger.error(f'Failed to send contact notification: {e}')
         return {'success': False, 'error': str(e)}

@@ -17,7 +17,7 @@ from .serializers import (
     ContactMessageCreateSerializer,
     ContactMessageSerializer,
 )
-from .services import subscribe_to_newsletter
+from .services import subscribe_to_newsletter, send_contact_notification
 
 
 # =============================================================================
@@ -176,7 +176,24 @@ class ContactMessageCreateView(generics.CreateAPIView):
         return request.META.get('REMOTE_ADDR')
 
     def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        # Envoyer la notification email à l'admin
+        contact_message = serializer.instance
+        try:
+            result = send_contact_notification(contact_message)
+            if result.get('success'):
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.info(f'Contact notification sent for message from: {contact_message.email}')
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f'Error sending contact notification: {e}')
+            # Ne pas bloquer l'envoi du message en cas d'erreur email
+
         return Response(
             {'message': 'Votre message a été envoyé avec succès.'},
             status=status.HTTP_201_CREATED
