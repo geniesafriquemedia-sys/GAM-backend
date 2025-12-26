@@ -88,11 +88,29 @@ def hide_default_snippets_menu(request, menu_items):
 
 @hooks.register('insert_global_admin_css')
 def global_admin_css():
-    """CSS personnalisé pour l'admin Wagtail - Thème GAM moderne sombre."""
-    return format_html(
-        '<link rel="stylesheet" href="{}core/css/wagtail-theme.css">',
-        settings.STATIC_URL
-    )
+    """CSS personnalisé pour l'admin Wagtail - Logo GAM."""
+    return format_html('''
+    <style>
+        /* Cacher l'oiseau SVG */
+        .sidebar-wagtail-branding__icon svg {{
+            display: none !important;
+        }}
+
+        /* Style du logo GAM dans le cercle */
+        .sidebar-wagtail-branding__icon {{
+            width: 70px !important;
+            height: 70px !important;
+            border-radius: 50% !important;
+            background-image: url('{}core/images/genies1.jpeg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-color: #1e1b4b !important;
+            border: 2px solid #fff !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        }}
+    </style>
+    ''', settings.STATIC_URL)
 
 
 @hooks.register('register_admin_urls')

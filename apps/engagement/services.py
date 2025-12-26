@@ -325,6 +325,27 @@ class BrevoService(BaseNewsletterService):
         if not self.list_id:
             raise NewsletterServiceError('BREVO_LIST_ID non configuré')
 
+        # Build conditional sections
+        thumbnail_section = ''
+        if video_thumbnail_url:
+            thumbnail_section = f'''<tr>
+                        <td style="position:relative;">
+                            <a href="{video_url}" style="display:block;position:relative;">
+                                <img src="{video_thumbnail_url}" width="600" style="width:100%;height:auto;display:block;" alt="{video_title}">
+                            </a>
+                        </td>
+                    </tr>'''
+
+        video_type_badge = ''
+        if video_type:
+            video_type_badge = f'<p style="margin:0 0 15px;"><span style="background-color:#dc2626;color:#ffffff;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">&#9654; {video_type}</span></p>'
+
+        youtube_button = ''
+        if youtube_url:
+            youtube_button = f'<td><a href="{youtube_url}" style="display:inline-block;background-color:#dc2626;color:#ffffff;padding:16px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;">&#9654; YouTube</a></td>'
+
+        description_text = video_description[:300] + ('...' if len(video_description) > 300 else '')
+
         # Créer le contenu HTML de l'email
         html_content = f'''
 <!DOCTYPE html>
@@ -342,27 +363,18 @@ class BrevoService(BaseNewsletterService):
                     <tr>
                         <td style="background-color:#18181b;padding:30px;text-align:center;">
                             <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:800;">Geniesdafriquemedia</h1>
-                            <p style="margin:10px 0 0;color:#a1a1aa;font-size:12px;text-transform:uppercase;letter-spacing:2px;">📺 Nouvelle Vidéo Web TV</p>
+                            <p style="margin:10px 0 0;color:#a1a1aa;font-size:12px;text-transform:uppercase;letter-spacing:2px;">&#128250; Nouvelle Video Web TV</p>
                         </td>
                     </tr>
 
-                    <!-- Thumbnail avec play button -->
-                    {f'''<tr>
-                        <td style="position:relative;">
-                            <a href="{video_url}" style="display:block;position:relative;">
-                                <img src="{video_thumbnail_url}" width="600" style="width:100%;height:auto;display:block;" alt="{video_title}">
-                                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;background-color:rgba(245,158,11,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                                    <div style="width:0;height:0;border-top:15px solid transparent;border-bottom:15px solid transparent;border-left:25px solid white;margin-left:5px;"></div>
-                                </div>
-                            </a>
-                        </td>
-                    </tr>''' if video_thumbnail_url else ''}
+                    <!-- Thumbnail -->
+                    {thumbnail_section}
 
                     <!-- Content -->
                     <tr>
                         <td style="padding:40px;">
                             <!-- Video Type Badge -->
-                            {f'<p style="margin:0 0 15px;"><span style="background-color:#dc2626;color:#ffffff;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">▶ {video_type}</span></p>' if video_type else ''}
+                            {video_type_badge}
 
                             <!-- Title -->
                             <h2 style="margin:0 0 20px;font-size:28px;font-weight:800;color:#18181b;line-height:1.3;">
@@ -371,7 +383,7 @@ class BrevoService(BaseNewsletterService):
 
                             <!-- Description -->
                             <p style="margin:0 0 30px;color:#52525b;font-size:16px;line-height:1.7;">
-                                {video_description[:300]}{'...' if len(video_description) > 300 else ''}
+                                {description_text}
                             </p>
 
                             <!-- CTA Buttons -->
@@ -379,10 +391,10 @@ class BrevoService(BaseNewsletterService):
                                 <tr>
                                     <td style="padding-right:10px;">
                                         <a href="{video_url}" style="display:inline-block;background-color:#f59e0b;color:#ffffff;padding:16px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;">
-                                            Regarder sur GAM →
+                                            Regarder sur GAM
                                         </a>
                                     </td>
-                                    {f'<td><a href="{youtube_url}" style="display:inline-block;background-color:#dc2626;color:#ffffff;padding:16px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;">▶ YouTube</a></td>' if youtube_url else ''}
+                                    {youtube_button}
                                 </tr>
                             </table>
                         </td>
@@ -392,10 +404,10 @@ class BrevoService(BaseNewsletterService):
                     <tr>
                         <td style="background-color:#fafafa;padding:30px;text-align:center;border-top:1px solid #e5e5e5;">
                             <p style="margin:0 0 10px;color:#71717a;font-size:12px;">
-                                Vous recevez cet email car vous êtes inscrit à notre newsletter.
+                                Vous recevez cet email car vous etes inscrit a notre newsletter.
                             </p>
                             <p style="margin:0;color:#a1a1aa;font-size:11px;">
-                                © 2025 Geniesdafriquemedia. Tous droits réservés.
+                                2025 Geniesdafriquemedia. Tous droits reserves.
                             </p>
                         </td>
                     </tr>

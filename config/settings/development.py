@@ -16,6 +16,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
+    'backend',  # Docker internal network
     'gam-tunnel-front.geniesafriquemedia.workers.dev',
     'gam-tunnel-back.geniesafriquemedia.workers.dev',
     '.trycloudflare.com',

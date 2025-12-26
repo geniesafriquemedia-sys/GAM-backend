@@ -4,6 +4,11 @@ djangorestframework>=3.14,<4.0
 django-cors-headers>=4.3,<5.0
 django-filter>=24.0,<25.0
 
+# Wagtail CMS
+wagtail>=6.0,<7.0
+django-taggit>=5.0,<6.0
+django-modelcluster>=6.0,<7.0
+
 # Database
 psycopg2-binary>=2.9,<3.0
 
