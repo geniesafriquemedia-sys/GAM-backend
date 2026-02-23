@@ -53,15 +53,21 @@ class Author(TimeStampedModel, SluggedModel):
     # Réseaux sociaux
     twitter = models.URLField(
         'Twitter/X',
-        blank=True
+        blank=True,
+        null=True,
+        default=''
     )
     linkedin = models.URLField(
         'LinkedIn',
-        blank=True
+        blank=True,
+        null=True,
+        default=''
     )
     website = models.URLField(
         'Site web',
-        blank=True
+        blank=True,
+        null=True,
+        default=''
     )
 
     # Statut
