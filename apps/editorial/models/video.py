@@ -25,12 +25,6 @@ class Video(PreviewableMixin, index.Indexed, TimeStampedModel, SluggedModel, Pub
     US-03: Publication de vidéos via URL YouTube.
     """
 
-    # Modes de prévisualisation (mobile, tablette, desktop)
-    preview_modes = [
-        ("desktop", "Desktop"),
-        ("tablet", "Tablette"),
-        ("mobile", "Mobile"),
-    ]
 
     def serve_preview(self, request, mode_name="desktop"):
         from django.conf import settings

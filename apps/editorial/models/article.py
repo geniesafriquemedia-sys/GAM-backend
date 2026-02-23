@@ -27,12 +27,6 @@ class Article(PreviewableMixin, index.Indexed, TimeStampedModel, SluggedModel, P
     US-04: Workflow de publication (Brouillon / Publié).
     """
 
-    # Modes de prévisualisation (mobile, tablette, desktop)
-    preview_modes = [
-        ("desktop", "Desktop"),
-        ("tablet", "Tablette"),
-        ("mobile", "Mobile"),
-    ]
 
     def serve_preview(self, request, mode_name="desktop"):
         from django.conf import settings
