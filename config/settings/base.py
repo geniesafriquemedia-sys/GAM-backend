@@ -344,10 +344,6 @@ BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
 WAGTAIL_SITE_NAME = 'Génies Afrique Médias'
 WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
 
-# Utiliser le modèle User personnalisé
-WAGTAIL_USER_EDIT_FORM = 'apps.users.forms.CustomUserEditForm'
-WAGTAIL_USER_CREATION_FORM = 'apps.users.forms.CustomUserCreationForm'
-WAGTAIL_USER_CUSTOM_FIELDS = ['role', 'bio', 'avatar']
 
 # Search backend
 WAGTAILSEARCH_BACKENDS = {
