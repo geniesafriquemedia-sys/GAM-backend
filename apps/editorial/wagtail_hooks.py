@@ -43,29 +43,35 @@ class CategoryViewSet(SnippetViewSet):
 
 
 class ArticleViewSet(SnippetViewSet):
-    """Configuration de l'interface Wagtail pour les Articles."""
+    """Configuration de l interface Wagtail pour les Articles."""
     model = Article
-    icon = 'doc-full'
-    menu_label = 'Articles'
+    icon = "doc-full"
+    menu_label = "Articles"
     menu_order = 300
     add_to_admin_menu = False
-    list_display = ['title', 'author', 'category', 'status', 'is_featured', 'published_at']
-    list_filter = ['status', 'is_featured', 'is_trending', 'category', 'author']
-    search_fields = ['title', 'excerpt']
-    ordering = ['-published_at', '-created_at']
+    list_display = ["title", "author", "category", "status", "is_featured", "published_at"]
+    list_filter = ["status", "is_featured", "is_trending", "category", "author"]
+    search_fields = ["title", "excerpt"]
+    ordering = ["-published_at", "-created_at"]
+
+    def get_preview_url(self, instance):
+        return f"{FRONTEND_URL}/articles/{instance.slug}?preview=true"
 
 
 class VideoViewSet(SnippetViewSet):
-    """Configuration de l'interface Wagtail pour les Vidéos."""
+    """Configuration de l interface Wagtail pour les Videos."""
     model = Video
-    icon = 'media'
-    menu_label = 'Vidéos'
+    icon = "media"
+    menu_label = "Videos"
     menu_order = 400
     add_to_admin_menu = False
-    list_display = ['title', 'video_type', 'category', 'status', 'is_featured', 'published_at']
-    list_filter = ['status', 'is_featured', 'is_live', 'video_type', 'category']
-    search_fields = ['title', 'description']
-    ordering = ['-published_at', '-created_at']
+    list_display = ["title", "video_type", "category", "status", "is_featured", "published_at"]
+    list_filter = ["status", "is_featured", "is_live", "video_type", "category"]
+    search_fields = ["title", "description"]
+    ordering = ["-published_at", "-created_at"]
+
+    def get_preview_url(self, instance):
+        return f"{FRONTEND_URL}/web-tv/{instance.slug}?preview=true"
 
 
 class EditorialViewSetGroup(SnippetViewSetGroup):

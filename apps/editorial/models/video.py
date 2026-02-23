@@ -7,6 +7,7 @@ from django.db import models
 from django.conf import settings
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from wagtail.search import index
+from wagtail.models import PreviewableMixin
 from apps.core.models import (
     TimeStampedModel,
     SluggedModel,
@@ -17,7 +18,7 @@ from apps.core.validators import validate_youtube_url
 
 
 # Note: Enregistré comme snippet via EditorialViewSetGroup dans wagtail_hooks.py
-class Video(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
+class Video(PreviewableMixin, index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
     """
     Modèle Vidéo pour la Web TV.
     US-03: Publication de vidéos via URL YouTube.
