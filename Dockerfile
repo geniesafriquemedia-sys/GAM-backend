@@ -13,10 +13,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1
 
-# Répertoire de travail
+# Repertoire de travail
 WORKDIR /app
 
-# Installer les dépendances système
+# Installer les dependances systeme
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
@@ -24,11 +24,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------------------------------
-# Stage 2: Builder - Installation des dépendances Python
+# Stage 2: Builder - Installation des dependances Python
 # -----------------------------------------------------------------------------
 FROM base as builder
 
-# Créer un virtualenv
+# Creer un virtualenv
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
@@ -46,7 +46,7 @@ FROM base as development
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Installer les dépendances de développement
+# Installer les dependances de developpement
 COPY requirements/ requirements/
 RUN pip install --no-cache-dir -r requirements/development.txt
 
@@ -56,7 +56,7 @@ COPY . .
 # Exposer le port
 EXPOSE 8000
 
-# Commande de développement
+# Commande de developpement
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 # -----------------------------------------------------------------------------
@@ -64,7 +64,7 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 # -----------------------------------------------------------------------------
 FROM base as production
 
-# Créer un utilisateur non-root
+# Creer un utilisateur non-root
 RUN groupadd -r gam && useradd -r -g gam gam
 
 # Copier le virtualenv depuis builder
@@ -74,11 +74,15 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Copier le code source
 COPY --chown=gam:gam . .
 
-# Créer les répertoires nécessaires
+# Copier et rendre executable l'entrypoint
+COPY --chown=gam:gam docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
+# Creer les repertoires necessaires
 RUN mkdir -p /app/staticfiles /app/media && \
     chown -R gam:gam /app/staticfiles /app/media
 
-# Passer à l'utilisateur non-root
+# Passer a l'utilisateur non-root
 USER gam
 
 # Exposer le port
@@ -91,14 +95,5 @@ ENV DJANGO_SETTINGS_MODULE=config.settings.production
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/api/v1/health/ || exit 1
 
-# Commande de production avec Gunicorn
-CMD ["gunicorn", "config.wsgi:application", \
-     "--bind", "0.0.0.0:8000", \
-     "--workers", "4", \
-     "--threads", "2", \
-     "--worker-class", "gthread", \
-     "--worker-tmp-dir", "/dev/shm", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "--capture-output", \
-     "--enable-stdio-inheritance"]
+# Commande de production - Utiliser l'entrypoint script
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

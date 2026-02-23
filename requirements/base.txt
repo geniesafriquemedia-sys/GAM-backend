@@ -3,6 +3,7 @@ Django>=5.0,<5.1
 djangorestframework>=3.14,<4.0
 django-cors-headers>=4.3,<5.0
 django-filter>=24.0,<25.0
+whitenoise>=6.6,<7.0
 
 # Wagtail CMS
 wagtail>=6.0,<7.0
