@@ -8,7 +8,6 @@ from django.conf import settings
 from wagtail.fields import StreamField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from wagtail.search import index
-from wagtail.models import PreviewableMixin
 from apps.core.models import (
     TimeStampedModel,
     SluggedModel,
@@ -19,7 +18,7 @@ from apps.editorial.blocks import ArticleStreamBlock
 
 
 # Note: Enregistré comme snippet via EditorialViewSetGroup dans wagtail_hooks.py
-class Article(PreviewableMixin, index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
+class Article(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
     """
     Modèle Article avec contenu riche.
     US-02: Composition d'article à l'aide de blocs dynamiques.

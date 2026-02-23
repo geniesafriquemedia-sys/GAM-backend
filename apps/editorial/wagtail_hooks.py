@@ -54,10 +54,6 @@ class ArticleViewSet(SnippetViewSet):
     search_fields = ["title", "excerpt"]
     ordering = ["-published_at", "-created_at"]
 
-    def get_preview_url(self, instance):
-        return f"{FRONTEND_URL}/articles/{instance.slug}?preview=true"
-
-
 class VideoViewSet(SnippetViewSet):
     """Configuration de l interface Wagtail pour les Videos."""
     model = Video
@@ -69,10 +65,6 @@ class VideoViewSet(SnippetViewSet):
     list_filter = ["status", "is_featured", "is_live", "video_type", "category"]
     search_fields = ["title", "description"]
     ordering = ["-published_at", "-created_at"]
-
-    def get_preview_url(self, instance):
-        return f"{FRONTEND_URL}/web-tv/{instance.slug}?preview=true"
-
 
 class EditorialViewSetGroup(SnippetViewSetGroup):
     """Groupe de menu pour la gestion éditoriale."""
