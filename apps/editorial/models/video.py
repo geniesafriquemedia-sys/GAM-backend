@@ -7,6 +7,8 @@ from django.db import models
 from django.conf import settings
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from wagtail.search import index
+from wagtail.models import PreviewableMixin
+from django.http import HttpResponseRedirect
 from apps.core.models import (
     TimeStampedModel,
     SluggedModel,
@@ -17,11 +19,29 @@ from apps.core.validators import validate_youtube_url
 
 
 # Note: Enregistré comme snippet via EditorialViewSetGroup dans wagtail_hooks.py
-class Video(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
+class Video(PreviewableMixin, index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
     """
     Modèle Vidéo pour la Web TV.
     US-03: Publication de vidéos via URL YouTube.
     """
+
+    # Modes de prévisualisation (mobile, tablette, desktop)
+    preview_modes = [
+        ("desktop", "Desktop"),
+        ("tablet", "Tablette"),
+        ("mobile", "Mobile"),
+    ]
+
+    def serve_preview(self, request, mode_name="desktop"):
+        from django.conf import settings
+        frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+        return HttpResponseRedirect(f"{frontend_url}/web-tv/{self.slug}")
+
+    def get_preview_url(self, request, mode_name="desktop"):
+        from django.conf import settings
+        frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+        return f"{frontend_url}/web-tv/{self.slug}"
+
 
     class VideoType(models.TextChoices):
         EMISSION = 'emission', 'Émission'

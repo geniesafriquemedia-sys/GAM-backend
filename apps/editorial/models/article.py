@@ -8,6 +8,8 @@ from django.conf import settings
 from wagtail.fields import StreamField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, FieldRowPanel
 from wagtail.search import index
+from wagtail.models import PreviewableMixin
+from django.http import HttpResponseRedirect
 from apps.core.models import (
     TimeStampedModel,
     SluggedModel,
@@ -18,12 +20,30 @@ from apps.editorial.blocks import ArticleStreamBlock
 
 
 # Note: Enregistré comme snippet via EditorialViewSetGroup dans wagtail_hooks.py
-class Article(index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
+class Article(PreviewableMixin, index.Indexed, TimeStampedModel, SluggedModel, PublishableModel, SEOModel):
     """
     Modèle Article avec contenu riche.
     US-02: Composition d'article à l'aide de blocs dynamiques.
     US-04: Workflow de publication (Brouillon / Publié).
     """
+
+    # Modes de prévisualisation (mobile, tablette, desktop)
+    preview_modes = [
+        ("desktop", "Desktop"),
+        ("tablet", "Tablette"),
+        ("mobile", "Mobile"),
+    ]
+
+    def serve_preview(self, request, mode_name="desktop"):
+        from django.conf import settings
+        frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+        return HttpResponseRedirect(f"{frontend_url}/articles/{self.slug}")
+
+    def get_preview_url(self, request, mode_name="desktop"):
+        from django.conf import settings
+        frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+        return f"{frontend_url}/articles/{self.slug}"
+
 
     # Informations principales
     title = models.CharField(
