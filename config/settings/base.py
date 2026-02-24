@@ -90,6 +90,7 @@ BUSINESS_APPS = [
     'apps.engagement',
     'apps.search',
     'apps.kpi',
+    'apps.advertising',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + WAGTAIL_APPS + THIRD_PARTY_APPS + CORE_APPS + BUSINESS_APPS

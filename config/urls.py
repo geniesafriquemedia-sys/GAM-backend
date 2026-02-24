@@ -35,6 +35,9 @@ api_v1_patterns = [
     
     # KPI & Statistics
     path('kpi/', include('apps.kpi.urls')),
+
+    # Advertising
+    path('advertising/', include('apps.advertising.urls')),
 ]
 
 # =============================================================================
