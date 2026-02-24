@@ -22,6 +22,14 @@ if [ "${USE_SUPABASE}" = "True" ]; then
     python manage.py migrate_to_supabase || echo "Migration skipped or already complete."
 fi
 
+# Générer les vues pour les articles (une seule fois)
+echo "Generating article views..."
+python manage.py shell < scripts/generate_views.py || echo "Views generation skipped or already complete."
+
+# Peupler les publicités (une seule fois)
+echo "Populating advertisements..."
+python manage.py shell < scripts/populate_ads.py || echo "Ads population skipped or already complete."
+
 echo "Initialization complete!"
 
 # Démarrer Gunicorn
