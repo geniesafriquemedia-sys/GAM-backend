@@ -61,8 +61,6 @@ THIRD_PARTY_APPS = [
     'drf_spectacular',
     'taggit',
     'modelcluster',
-    'cloudinary',
-    'cloudinary_storage',
 ]
 
 # Wagtail CMS Apps
@@ -196,19 +194,26 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # =============================================================================
-# CLOUDINARY SETTINGS (Media Storage)
+# SUPABASE STORAGE (Media Storage via S3-compatible API)
 # =============================================================================
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default='dxe2sh4cb'),
-    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
-    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
-}
+USE_SUPABASE = config('USE_SUPABASE', default=False, cast=bool)
 
-# Utiliser Cloudinary pour le stockage des médias en production
-USE_CLOUDINARY = config('USE_CLOUDINARY', default=False, cast=bool)
+if USE_SUPABASE:
+    SUPABASE_URL = config('SUPABASE_URL')
+    SUPABASE_REF = SUPABASE_URL.replace('https://', '').replace('.supabase.co', '')
 
-if USE_CLOUDINARY:
-    DEFAULT_FILE_STORAGE = 'apps.core.storage.GAMCloudinaryStorage'
+    AWS_ACCESS_KEY_ID = config('SUPABASE_S3_KEY')
+    AWS_SECRET_ACCESS_KEY = config('SUPABASE_S3_SECRET')
+    AWS_STORAGE_BUCKET_NAME = 'gam-media'
+    AWS_S3_REGION_NAME = config('SUPABASE_S3_REGION', default='eu-west-3')
+    AWS_S3_ENDPOINT_URL = config('SUPABASE_S3_ENDPOINT')
+    AWS_S3_FILE_OVERWRITE = False
+    # URLs publiques sans signature (bucket public ou policy RLS SELECT pour anon)
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_CUSTOM_DOMAIN = f"{SUPABASE_REF}.supabase.co/storage/v1/object/public/gam-media"
+
+    MEDIA_URL = f"https://{SUPABASE_REF}.supabase.co/storage/v1/object/public/gam-media/"
+    DEFAULT_FILE_STORAGE = 'apps.core.storage.GAMBaseStorage'
 
 
 # =============================================================================

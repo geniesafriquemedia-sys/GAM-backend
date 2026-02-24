@@ -79,8 +79,8 @@ COPY --chown=gam:gam docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 
 # Creer les repertoires necessaires
-RUN mkdir -p /app/staticfiles /app/media && \
-    chown -R gam:gam /app/staticfiles /app/media
+RUN mkdir -p /app/staticfiles /app/media /app/static && \
+    chown -R gam:gam /app/staticfiles /app/media /app/static
 
 # Passer a l'utilisateur non-root
 USER gam

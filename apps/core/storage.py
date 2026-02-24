@@ -1,84 +1,37 @@
 """
-Custom Cloudinary Storage Backends for GAM
-Organise les médias dans des dossiers structurés sur Cloudinary.
+Supabase Storage Backends for GAM
+Stockage des médias sur Supabase Storage (compatible S3).
 """
 
-from django.conf import settings
-from cloudinary_storage.storage import MediaCloudinaryStorage, RawMediaCloudinaryStorage
-import cloudinary
+from storages.backends.s3boto3 import S3Boto3Storage
 
 
-class GAMCloudinaryStorage(MediaCloudinaryStorage):
-    """
-    Storage personnalisé pour GAM sans préfixe 'media/'.
-    Les fichiers sont stockés directement avec leur chemin upload_to.
-    """
-
-    def url(self, name):
-        """Retourne l'URL Cloudinary sans le préfixe media."""
-        if not name:
-            return ''
-        # Construire l'URL directement sans préfixe
-        cloud_name = settings.CLOUDINARY_STORAGE.get('CLOUD_NAME')
-        return f"https://res.cloudinary.com/{cloud_name}/image/upload/{name}"
+class GAMBaseStorage(S3Boto3Storage):
+    """Storage de base Supabase S3 pour GAM."""
+    bucket_name = 'gam-media'
+    file_overwrite = False
 
 
-class ArticleImageStorage(MediaCloudinaryStorage):
+class ArticleImageStorage(GAMBaseStorage):
     """Storage pour les images d'articles."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.folder = 'gam/articles'
-        self.resource_type = 'image'
+    location = 'gam/articles'
 
 
-class AuthorPhotoStorage(MediaCloudinaryStorage):
+class AuthorPhotoStorage(GAMBaseStorage):
     """Storage pour les photos d'auteurs."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.folder = 'gam/authors'
-        self.resource_type = 'image'
+    location = 'gam/authors'
 
 
-class CategoryImageStorage(MediaCloudinaryStorage):
+class CategoryImageStorage(GAMBaseStorage):
     """Storage pour les images de catégories."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.folder = 'gam/categories'
-        self.resource_type = 'image'
+    location = 'gam/categories'
 
 
-class VideoThumbnailStorage(MediaCloudinaryStorage):
+class VideoThumbnailStorage(GAMBaseStorage):
     """Storage pour les miniatures de vidéos."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.folder = 'gam/videos/thumbnails'
-        self.resource_type = 'image'
+    location = 'gam/videos/thumbnails'
 
 
-class UserAvatarStorage(MediaCloudinaryStorage):
+class UserAvatarStorage(GAMBaseStorage):
     """Storage pour les avatars utilisateurs."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.folder = 'gam/users/avatars'
-        self.resource_type = 'image'
-
-
-def get_cloudinary_storage(folder: str):
-    """
-    Factory pour créer un storage Cloudinary avec un dossier spécifique.
-
-    Usage:
-        storage = get_cloudinary_storage('articles/featured')
-    """
-    class DynamicCloudinaryStorage(MediaCloudinaryStorage):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.folder = f'gam/{folder}'
-            self.resource_type = 'image'
-
-    return DynamicCloudinaryStorage()
+    location = 'gam/users/avatars'
