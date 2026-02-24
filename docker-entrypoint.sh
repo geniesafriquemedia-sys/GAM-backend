@@ -16,6 +16,12 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
+# Migrer les images Cloudinary → Supabase (idempotent : skip si déjà présentes)
+if [ "${USE_SUPABASE}" = "True" ]; then
+    echo "Migrating media from Cloudinary to Supabase..."
+    python manage.py migrate_to_supabase || echo "Migration skipped or already complete."
+fi
+
 echo "Initialization complete!"
 
 # Démarrer Gunicorn

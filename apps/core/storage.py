@@ -11,6 +11,12 @@ class GAMBaseStorage(S3Boto3Storage):
     bucket_name = 'gam-media'
     file_overwrite = False
 
+    def url(self, name):
+        """Retourne les URLs absolues (legacy) telles quelles, sans préfixe Supabase."""
+        if name and (name.startswith('http://') or name.startswith('https://')):
+            return name
+        return super().url(name)
+
 
 class ArticleImageStorage(GAMBaseStorage):
     """Storage pour les images d'articles."""
