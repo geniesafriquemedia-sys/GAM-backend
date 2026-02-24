@@ -2,9 +2,10 @@ import os
 import sys
 import django
 import random
-from datetime import datetime, timedelta
+from datetime import date, timedelta
+from django.core.files.base import ContentFile
+import requests
 
-# Ajouter le dossier parent au path
 sys.path.insert(0, '/app')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')
 
@@ -21,15 +22,13 @@ print("Creation des publicites...")
 
 POSITIONS = [
     'HOMEPAGE_TOP',
-    'HOMEPAGE_MID', 
-    'SIDEBAR',
-    'ARTICLE_TOP',
+    'HOMEPAGE_MID',
     'ARTICLE_SIDEBAR',
     'ARTICLE_IN_BODY_1',
     'ARTICLE_IN_BODY_2',
-    'VIDEO_PRE_ROLL',
-    'FOOTER',
-    'SEARCH_TOP',
+    'CATEGORIES_TOP',
+    'WEBTV_TOP',
+    'FOOTER_BANNER',
 ]
 
 UNSPLASH_IMAGES = [
@@ -46,31 +45,50 @@ UNSPLASH_IMAGES = [
 ]
 
 ADVERTISERS = [
-    'MTN Africa', 'Orange Africa', 'Ecobank', 'Jumia', 'Dangote Group',
-    'Air Afrique', 'Africa Finance', 'Safaricom', 'Andela', 'Flutterwave',
+    ('MTN Africa', 'contact@mtn.com'),
+    ('Orange Africa', 'contact@orange.com'),
+    ('Ecobank', 'contact@ecobank.com'),
+    ('Jumia', 'contact@jumia.com'),
+    ('Dangote Group', 'contact@dangote.com'),
+    ('Africa Finance', 'contact@africafinance.com'),
+    ('Safaricom', 'contact@safaricom.com'),
+    ('Andela', 'contact@andela.com'),
+    ('Flutterwave', 'contact@flutterwave.com'),
+    ('Africa Tourism', 'contact@africatourism.com'),
 ]
 
 created = 0
-start_date = datetime.now()
+start_date = date.today()
 end_date = start_date + timedelta(days=90)
 
 for i, position in enumerate(POSITIONS):
+    advertiser, email = ADVERTISERS[i % len(ADVERTISERS)]
+    image_url = UNSPLASH_IMAGES[i % len(UNSPLASH_IMAGES)]
+
     try:
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        image_content = ContentFile(response.content)
+
         ad = Advertisement(
-            title=f"Publicite {ADVERTISERS[i % len(ADVERTISERS)]}",
-            advertiser_name=ADVERTISERS[i % len(ADVERTISERS)],
-            position=position,
+            title=f"Publicite {advertiser}",
+            advertiser_name=advertiser,
+            advertiser_email=email,
+            advertiser_phone="+221000000000",
+            notes="Publicite generee automatiquement",
+            external_url='https://geniesdafriquemedia.com/partenariats',
+            alt_text=f"Publicite {advertiser}",
             ad_type='BANNER',
-            image_url=UNSPLASH_IMAGES[i % len(UNSPLASH_IMAGES)],
-            target_url='https://geniesdafriquemedia.com',
-            is_active=True,
+            position=position,
             start_date=start_date,
             end_date=end_date,
-            priority=random.randint(1, 10),
+            is_active=True,
+            status='ACTIVE',
+            price_per_month=0,
         )
-        ad.save()
+        ad.image.save(f"ad_{position.lower()}_{i}.jpg", image_content, save=True)
         created += 1
-        print(f"  OK: {position} -> {ADVERTISERS[i % len(ADVERTISERS)]}")
+        print(f"  OK: {position} -> {advertiser}")
     except Exception as e:
         print(f"  ERROR: {position} -> {e}")
 
