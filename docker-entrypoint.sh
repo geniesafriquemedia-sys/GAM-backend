@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
 # GAM Backend - Docker Entrypoint Script
-# Exécute les commandes d'initialisation avant de démarrer Gunicorn
+# Executes initialization commands before starting Gunicorn
 # =============================================================================
 
 set -e
@@ -16,23 +16,23 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
-# Migrer les images Cloudinary → Supabase (idempotent : skip si déjà présentes)
+# Migrer les images Cloudinary vers Supabase (idempotent)
 if [ "${USE_SUPABASE}" = "True" ]; then
     echo "Migrating media from Cloudinary to Supabase..."
     python manage.py migrate_to_supabase || echo "Migration skipped or already complete."
 fi
 
-# Générer les vues pour les articles (une seule fois)
+# Generer les vues pour les articles (une seule fois)
 echo "Generating article views..."
-python manage.py shell < scripts/generate_views.py || echo "Views generation skipped or already complete."
+python scripts/generate_views.py || echo "Views generation skipped or already complete."
 
-# Peupler les publicités (une seule fois)
+# Peupler les publicites (une seule fois)
 echo "Populating advertisements..."
-python manage.py shell < scripts/populate_ads.py || echo "Ads population skipped or already complete."
+python scripts/populate_ads.py || echo "Ads population skipped or already complete."
 
 echo "Initialization complete!"
 
-# Démarrer Gunicorn
+# Demarrer Gunicorn
 echo "Starting Gunicorn server..."
 exec gunicorn config.wsgi:application \
     --bind 0.0.0.0:8000 \
