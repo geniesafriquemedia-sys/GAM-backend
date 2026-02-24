@@ -1,164 +1,77 @@
 import os
-import django
 import sys
+import django
+import random
+from datetime import datetime, timedelta
 
-# Configuration Django
+# Ajouter le dossier parent au path
+sys.path.insert(0, '/app')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')
+
+django.setup()
 
 from apps.advertising.models import Advertisement
 
-# Vérifier si des publicités existent déjà
+# Verifier si des pubs existent deja
 if Advertisement.objects.count() >= 10:
-    print(f"✅ {Advertisement.objects.count()} publicités déjà présentes. Skip.")
+    print(f"Publicites deja presentes ({Advertisement.objects.count()}). Skip.")
     sys.exit(0)
 
-# Images Unsplash pour les publicités
+print("Creation des publicites...")
+
+POSITIONS = [
+    'HOMEPAGE_TOP',
+    'HOMEPAGE_MID', 
+    'SIDEBAR',
+    'ARTICLE_TOP',
+    'ARTICLE_SIDEBAR',
+    'ARTICLE_IN_BODY_1',
+    'ARTICLE_IN_BODY_2',
+    'VIDEO_PRE_ROLL',
+    'FOOTER',
+    'SEARCH_TOP',
+]
+
 UNSPLASH_IMAGES = [
-    "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=728&h=90&fit=crop",
-    "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=300&h=250&fit=crop",
-    "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=728&h=90&fit=crop",
-    "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=300&h=250&fit=crop",
-    "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=728&h=90&fit=crop",
-    "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=300&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=728&h=90&fit=crop",
-    "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=300&h=250&fit=crop",
-    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=728&h=90&fit=crop",
-    "https://images.unsplash.com/photo-1560472355-536de3962603?w=300&h=250&fit=crop",
-    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=728&h=90&fit=crop",
-    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&h=600&fit=crop",
+    'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=728&h=90&fit=crop',
+    'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=728&h=90&fit=crop',
 ]
 
-# Données des publicités
-ADS_DATA = [
-    {
-        "title": "Investissez en Afrique - Opportunités 2026",
-        "advertiser": "Africa Investment Group",
-        "position": "HOMEPAGE_TOP",
-        "ad_type": "BANNER",
-        "image_url": UNSPLASH_IMAGES[0],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Formation Tech Africa - Inscrivez-vous",
-        "advertiser": "TechAfrica Academy",
-        "position": "HOMEPAGE_MID",
-        "ad_type": "BANNER",
-        "image_url": UNSPLASH_IMAGES[2],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Business Africa Summit 2026",
-        "advertiser": "Africa Business Network",
-        "position": "ARTICLE_SIDEBAR",
-        "ad_type": "SIDEBAR",
-        "image_url": UNSPLASH_IMAGES[1],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Découvrez la Mode Africaine",
-        "advertiser": "AfriStyle Fashion",
-        "position": "ARTICLE_SIDEBAR",
-        "ad_type": "SIDEBAR",
-        "image_url": UNSPLASH_IMAGES[3],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Solutions Énergétiques Durables",
-        "advertiser": "SolarAfrica Solutions",
-        "position": "HOMEPAGE_TOP",
-        "ad_type": "BANNER",
-        "image_url": UNSPLASH_IMAGES[4],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Financement PME Africaines",
-        "advertiser": "AfriBank Capital",
-        "position": "ARTICLE_IN_BODY_1",
-        "ad_type": "BANNER",
-        "image_url": UNSPLASH_IMAGES[6],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Recrutement Talents Africains",
-        "advertiser": "AfriTalent RH",
-        "position": "ARTICLE_SIDEBAR",
-        "ad_type": "SKYSCRAPER",
-        "image_url": UNSPLASH_IMAGES[5],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Immobilier Premium Abidjan",
-        "advertiser": "ImmoAfrique",
-        "position": "HOMEPAGE_MID",
-        "ad_type": "BANNER",
-        "image_url": UNSPLASH_IMAGES[8],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Assurance Santé Africa Care",
-        "advertiser": "Africa Care Insurance",
-        "position": "ARTICLE_SIDEBAR",
-        "ad_type": "SIDEBAR",
-        "image_url": UNSPLASH_IMAGES[7],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Export Produits Africains vers Europe",
-        "advertiser": "AfriTrade Export",
-        "position": "ARTICLE_IN_BODY_2",
-        "ad_type": "BANNER",
-        "image_url": UNSPLASH_IMAGES[10],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Tourisme Durable en Afrique",
-        "advertiser": "EcoTour Africa",
-        "position": "ARTICLE_SIDEBAR",
-        "ad_type": "SKYSCRAPER",
-        "image_url": UNSPLASH_IMAGES[11],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
-    {
-        "title": "Agriculture Intelligente Africa",
-        "advertiser": "AgriTech Africa",
-        "position": "HOMEPAGE_TOP",
-        "ad_type": "BANNER",
-        "image_url": UNSPLASH_IMAGES[9],
-        "click_url": "https://geniesdafriquemedia.com/partenariats",
-        "is_active": True,
-    },
+ADVERTISERS = [
+    'MTN Africa', 'Orange Africa', 'Ecobank', 'Jumia', 'Dangote Group',
+    'Air Afrique', 'Africa Finance', 'Safaricom', 'Andela', 'Flutterwave',
 ]
 
-print(f"Création de {len(ADS_DATA)} publicités...")
 created = 0
-for ad_data in ADS_DATA:
-    ad, created_flag = Advertisement.objects.get_or_create(
-        title=ad_data["title"],
-        defaults={
-            "advertiser": ad_data["advertiser"],
-            "position": ad_data["position"],
-            "ad_type": ad_data["ad_type"],
-            "image_url": ad_data["image_url"],
-            "click_url": ad_data["click_url"],
-            "is_active": ad_data["is_active"],
-        }
-    )
-    if created_flag:
-        created += 1
-        print(f"  ✅ Créé: {ad.title}")
-    else:
-        print(f"  ⏭️  Existant: {ad.title}")
+start_date = datetime.now()
+end_date = start_date + timedelta(days=90)
 
-print(f"\n✅ {created} nouvelles publicités créées!")
-print(f"📊 Total publicités: {Advertisement.objects.count()}")
+for i, position in enumerate(POSITIONS):
+    try:
+        ad = Advertisement(
+            title=f"Publicite {ADVERTISERS[i % len(ADVERTISERS)]}",
+            advertiser_name=ADVERTISERS[i % len(ADVERTISERS)],
+            position=position,
+            ad_type='BANNER',
+            image_url=UNSPLASH_IMAGES[i % len(UNSPLASH_IMAGES)],
+            target_url='https://geniesdafriquemedia.com',
+            is_active=True,
+            start_date=start_date,
+            end_date=end_date,
+            priority=random.randint(1, 10),
+        )
+        ad.save()
+        created += 1
+        print(f"  OK: {position} -> {ADVERTISERS[i % len(ADVERTISERS)]}")
+    except Exception as e:
+        print(f"  ERROR: {position} -> {e}")
+
+print(f"\n{created} publicites creees avec succes!")
