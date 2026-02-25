@@ -45,7 +45,7 @@ class ArticleFilter(django_filters.FilterSet):
         fields=(
             ('published_at', 'published_at'),
             ('created_at', 'created_at'),
-            ('views_count', 'views'),
+            ('views_count', 'views_count'),
             ('reading_time', 'reading_time'),
             ('title', 'title'),
         )
@@ -103,7 +103,7 @@ class VideoFilter(django_filters.FilterSet):
         fields=(
             ('published_at', 'published_at'),
             ('created_at', 'created_at'),
-            ('views_count', 'views'),
+            ('views_count', 'views_count'),
             ('duration', 'duration'),
             ('title', 'title'),
         )

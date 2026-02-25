@@ -59,7 +59,11 @@ class TrackAdView(APIView):
     Enregistre une impression ou un clic sur une publicité.
 
     Body: {"ad_id": 1, "event": "impression"} ou {"ad_id": 1, "event": "click"}
+
+    Note: authentication_classes est vide pour désactiver la vérification CSRF
+    de SessionAuthentication sur cet endpoint public (POST anonyme).
     """
+    authentication_classes = []
     permission_classes = [AllowAny]
 
     @extend_schema(
