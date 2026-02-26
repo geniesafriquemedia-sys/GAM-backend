@@ -198,20 +198,27 @@ class Video(PreviewableMixin, index.Indexed, TimeStampedModel, SluggedModel, Pub
         return self.title
 
     def save(self, *args, **kwargs):
-        # Extraire l'ID YouTube et générer la miniature
+        # Extraire l'ID YouTube depuis l'URL si pas encore renseigné
         if self.youtube_url and not self.youtube_id:
-            from apps.core.utils import extract_youtube_id, get_youtube_thumbnail
+            from apps.core.utils import extract_youtube_id
             self.youtube_id = extract_youtube_id(self.youtube_url)
-            if self.youtube_id and not self.youtube_thumbnail:
-                self.youtube_thumbnail = get_youtube_thumbnail(self.youtube_id)
+        # Générer la miniature YouTube si on a un ID mais pas encore de miniature
+        if self.youtube_id and not self.youtube_thumbnail:
+            from apps.core.utils import get_youtube_thumbnail
+            self.youtube_thumbnail = get_youtube_thumbnail(self.youtube_id)
         super().save(*args, **kwargs)
 
     @property
     def thumbnail_url(self) -> str:
-        """Retourne l'URL de la miniature (personnalisée ou YouTube)."""
+        """Retourne l'URL de la miniature (personnalisée > youtube_thumbnail > générée)."""
         if self.thumbnail:
             return self.thumbnail.url
-        return self.youtube_thumbnail or ''
+        if self.youtube_thumbnail:
+            return self.youtube_thumbnail
+        # Fallback : générer l'URL directement depuis youtube_id sans accès réseau
+        if self.youtube_id:
+            return f'https://img.youtube.com/vi/{self.youtube_id}/hqdefault.jpg'
+        return ''
 
     @property
     def embed_url(self) -> str:
