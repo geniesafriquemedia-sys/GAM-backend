@@ -135,6 +135,10 @@ class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
             _videos_count=Count('videos', filter=Q(videos__status='published'))
         ).prefetch_related('children')
 
+    @method_decorator(cache_page(60 * 10))  # Cache liste 10 min
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
     @action(detail=True, methods=['get'])
     def articles(self, request, pk=None):
         """Liste des articles d'une catégorie."""

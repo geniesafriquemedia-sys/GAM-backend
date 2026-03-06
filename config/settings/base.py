@@ -242,14 +242,14 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 12,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
+        'apps.core.throttles.ReadSafeAnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/hour',
-        'user': '1000/hour',
-        'newsletter': '10/hour',  # Limite pour les inscriptions newsletter
-        'contact': '5/hour',  # Limite pour les messages de contact
+        'anon': '2000/hour',   # Lecture libre — écriture limitée à 2000/h par IP
+        'user': '5000/hour',
+        'newsletter': '10/hour',
+        'contact': '5/hour',
     },
 }
 

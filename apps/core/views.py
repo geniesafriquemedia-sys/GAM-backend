@@ -2,6 +2,8 @@
 Core Views - Endpoints publics pour les paramètres du site
 """
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -16,6 +18,7 @@ class SocialNetworkListView(APIView):
     GET /api/v1/core/social-networks/
     Retourne les réseaux sociaux actifs, triés par ordre d'affichage.
     Aucune authentification requise (endpoint public).
+    Mis en cache 10 minutes côté serveur Django.
     """
     permission_classes = [AllowAny]
 
@@ -24,6 +27,7 @@ class SocialNetworkListView(APIView):
         responses={200: SocialNetworkSerializer(many=True)},
         summary='Liste des réseaux sociaux actifs',
     )
+    @method_decorator(cache_page(60 * 10))
     def get(self, request):
         networks = SocialNetwork.objects.filter(is_active=True)
         serializer = SocialNetworkSerializer(networks, many=True)
