@@ -38,6 +38,9 @@ api_v1_patterns = [
 
     # Advertising
     path('advertising/', include('apps.advertising.urls')),
+
+    # Core (Paramètres du site : réseaux sociaux)
+    path('core/', include('apps.core.urls')),
 ]
 
 # =============================================================================

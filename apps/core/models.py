@@ -172,3 +172,58 @@ class OrderedModel(models.Model):
     class Meta:
         abstract = True
         ordering = ['order']
+
+
+class SocialNetwork(TimeStampedModel):
+    """
+    Réseaux sociaux du site GAM — géré depuis l'admin Wagtail.
+    Permet aux opérateurs d'ajouter/modifier les liens sans toucher au code.
+    """
+
+    class Network(models.TextChoices):
+        FACEBOOK  = 'facebook',  'Facebook'
+        LINKEDIN  = 'linkedin',  'LinkedIn'
+        WHATSAPP  = 'whatsapp',  'WhatsApp'
+        TIKTOK    = 'tiktok',    'TikTok'
+        YOUTUBE   = 'youtube',   'YouTube'
+        INSTAGRAM = 'instagram', 'Instagram'
+        TWITTER   = 'twitter',   'Twitter / X'
+        TELEGRAM  = 'telegram',  'Telegram'
+        SNAPCHAT  = 'snapchat',  'Snapchat'
+        OTHER     = 'other',     'Autre'
+
+    network = models.CharField(
+        'Réseau',
+        max_length=30,
+        choices=Network.choices,
+        unique=True,
+        help_text="Identifiant du réseau (détermine l'icône affichée sur le site)"
+    )
+    label = models.CharField(
+        'Libellé',
+        max_length=100,
+        blank=True,
+        help_text='Nom affiché (laisser vide pour utiliser le nom du réseau)'
+    )
+    url = models.URLField(
+        'URL',
+        help_text='Ex: https://facebook.com/geniesdafriquemedia'
+    )
+    is_active = models.BooleanField(
+        'Actif',
+        default=True,
+        help_text='Décocher pour masquer ce réseau sur le site'
+    )
+    order = models.PositiveIntegerField(
+        "Ordre d'affichage",
+        default=0,
+        help_text='0 = en premier'
+    )
+
+    class Meta:
+        verbose_name = 'Réseau Social'
+        verbose_name_plural = 'Réseaux Sociaux'
+        ordering = ['order', 'network']
+
+    def __str__(self):
+        return self.label or self.get_network_display()
