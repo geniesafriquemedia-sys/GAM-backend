@@ -6,6 +6,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from django.db.models import Q, Count, Prefetch
@@ -91,6 +92,13 @@ class AuthorViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
     partial_update=extend_schema(tags=['Categories']),
     destroy=extend_schema(tags=['Categories']),
 )
+class CategoryPagination(PageNumberPagination):
+    """Pagination pour les catégories — autorise page_size jusqu'à 200."""
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 200
+
+
 class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
     """
     ViewSet pour la gestion des catégories (US-01).
@@ -101,6 +109,7 @@ class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
     filterset_fields = ['is_active', 'is_featured', 'parent']
     search_fields = ['name', 'description']
     ordering_fields = ['name', 'order', 'created_at']
+    pagination_class = CategoryPagination
 
     serializer_class = CategoryListSerializer
     serializer_action_classes = {
