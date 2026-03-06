@@ -84,6 +84,13 @@ class AuthorViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
 # CATEGORY VIEWS
 # =============================================================================
 
+class CategoryPagination(PageNumberPagination):
+    """Pagination pour les catégories — autorise page_size jusqu'à 200."""
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 200
+
+
 @extend_schema_view(
     list=extend_schema(tags=['Categories']),
     retrieve=extend_schema(tags=['Categories']),
@@ -92,13 +99,6 @@ class AuthorViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
     partial_update=extend_schema(tags=['Categories']),
     destroy=extend_schema(tags=['Categories']),
 )
-class CategoryPagination(PageNumberPagination):
-    """Pagination pour les catégories — autorise page_size jusqu'à 200."""
-    page_size = 100
-    page_size_query_param = 'page_size'
-    max_page_size = 200
-
-
 class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ModelViewSet):
     """
     ViewSet pour la gestion des catégories (US-01).
