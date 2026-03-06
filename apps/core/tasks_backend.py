@@ -25,3 +25,7 @@ class ImmediateBackend(BaseTaskBackend):
             pass
         # Retourner None au lieu de TaskResult pour éviter le bug
         return None
+
+    def save_metadata(self, task, metadata):
+        """No-op: ce backend ne persiste pas les métadonnées de tâche."""
+        pass
